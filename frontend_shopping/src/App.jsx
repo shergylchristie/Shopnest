@@ -8,7 +8,7 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import CartPage from "./components/Cart";
 import ScrollToTop from "./components/ScrollToTop";
-import AdminDashboard from "./Admin/AdminDashboard";
+import AdminDashboard from "./admin/AdminDashboard";
 import ManageQuery from "./admin/ManageQuery";
 import ManageProducts from "./admin/ManageProducts";
 import AddProducts from "./admin/AddProducts";
