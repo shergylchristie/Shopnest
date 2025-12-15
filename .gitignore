@@ -1,0 +1,31 @@
+# ===== Node.js (shared) =====
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ===== Environment variables =====
+.env
+.env.*
+!.env.example
+
+# ===== Backend (Express) =====
+backend/node_modules/
+backend/dist/
+backend/build/
+
+# ===== Frontend (Vite) =====
+frontend_shopping/node_modules/
+frontend_shopping/dist/
+frontend_shopping/.vite/
+
+# ===== Logs =====
+logs/
+*.log
+
+# ===== OS / Editor =====
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json

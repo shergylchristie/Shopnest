@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Hide arrows in WebKit browsers (Chrome, Safari, Edge) */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Hide arrows in Firefox */
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+}
+
+html{
+   height: 100%;
+}
+
+body {
+  min-height: 100%;
+  overflow-y: scroll; /* always reserve space for scrollbar */
+}
+
