@@ -20,13 +20,59 @@ import {
 } from "../features/cartSlice";
 import { apiFetch } from "../apiClient";
 
-
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+
+import { Skeleton } from "@mui/material";
+
+const ProductDetailsSkeleton = () => {
+  return (
+    <div className="max-w-7xl mx-auto py-4 md:py-10 px-4">
+      <div className="mb-6">
+        <Skeleton variant="text" width={180} height={18} />
+        <Skeleton variant="text" width={260} height={32} />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-10">
+        <div className="w-full">
+          <Skeleton
+            variant="rectangular"
+            className="w-full rounded-xl shadow-md"
+            height={380}
+          />
+        </div>
+
+        <div className="w-full rounded-xl shadow-md bg-white p-4 sm:p-5 md:p-7 flex flex-col">
+          <div className="flex items-center justify-between mb-4">
+            <Skeleton variant="rectangular" width={90} height={28} />
+            <Skeleton variant="text" width={120} height={20} />
+          </div>
+
+          <div className="mb-4">
+            <Skeleton variant="text" width={60} height={18} />
+            <Skeleton variant="text" width={120} height={32} />
+          </div>
+
+          <div className="mb-6">
+            <Skeleton variant="text" width={80} height={18} />
+            <Skeleton variant="text" width="100%" height={18} />
+            <Skeleton variant="text" width="90%" height={18} />
+            <Skeleton variant="text" width="80%" height={18} />
+          </div>
+
+          <div className="mt-auto flex items-center gap-3">
+            <Skeleton variant="rectangular" width="70%" height={44} />
+            <Skeleton variant="circular" width={44} height={44} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -92,20 +138,14 @@ const ProductDetails = () => {
         })
       );
     }
-  }, [cartData, dispatch]);
+  }, [cartData, dispatch, fetchStatus, token, userid]);
 
   useEffect(() => {
     fetchProduct();
   }, [id]);
 
   if (isLoading) {
-    return (
-      <div className="max-w-7xl mx-auto py-16 px-4">
-        <p className="text-center text-gray-500 text-sm sm:text-base md:text-lg">
-          Loading product...
-        </p>
-      </div>
-    );
+    return <ProductDetailsSkeleton />;
   }
 
   if (!product) {
@@ -117,6 +157,7 @@ const ProductDetails = () => {
       </div>
     );
   }
+
   const cartItem = cartData.find((item) => item._id === product?._id);
   const quantity = cartItem?.quantity || 0;
 

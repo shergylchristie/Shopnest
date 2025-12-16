@@ -4,20 +4,75 @@ import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { MdDelete, MdEdit } from "react-icons/md";
 import { apiFetch } from "../apiClient";
+import { Skeleton } from "@mui/material";
+
+const ManageProductsSkeletonGrid = () => {
+  return (
+    <div className="grid gap-6 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      {Array.from({ length: 8 }).map((_, index) => (
+        <div
+          key={index}
+          className="bg-slate-50 rounded-sm shadow-lg p-1 md:p-5 flex flex-col h-full"
+        >
+          <Skeleton
+            variant="rectangular"
+            className="w-full rounded-sm"
+            height={160}
+          />
+
+          <div className="space-y-2 md:space-y-3 mt-2 flex-1">
+            <Skeleton variant="text" width="80%" height={20} />
+            <Skeleton variant="text" width="40%" height={20} />
+            <Skeleton variant="text" width="30%" height={20} />
+            <Skeleton
+              variant="rectangular"
+              width={80}
+              height={24}
+              className="rounded-md"
+            />
+          </div>
+
+          <div className="flex justify-between mt-3 md:mt-4">
+            <Skeleton
+              variant="rectangular"
+              width={40}
+              height={32}
+              className="rounded-md"
+            />
+            <Skeleton
+              variant="rectangular"
+              width={40}
+              height={32}
+              className="rounded-md"
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
 
 const ManageProducts = () => {
   const [products, setProduct] = useState([]);
+  const [loadingProducts, setLoadingProducts] = useState(false);
   const token = localStorage.getItem("token");
 
   async function handleGetProducts() {
-    const response = await apiFetch("/api/getproducts", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    const result = await response.json();
-    setProduct(result);
+    try {
+      setLoadingProducts(true);
+      const response = await apiFetch("/api/getproducts", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const result = await response.json();
+      setProduct(result);
+    } catch (error) {
+      toast.error(error?.message || "Failed to load products");
+    } finally {
+      setLoadingProducts(false);
+    }
   }
 
   async function handleDelete(id) {
@@ -34,7 +89,7 @@ const ManageProducts = () => {
         handleGetProducts();
       } else toast.error(result.message);
     } catch (error) {
-      toast.error(error);
+      toast.error(error?.message || "Failed to delete product");
     }
   }
 
@@ -58,7 +113,9 @@ const ManageProducts = () => {
           </Link>
         </div>
 
-        {products.length > 0 ? (
+        {loadingProducts ? (
+          <ManageProductsSkeletonGrid />
+        ) : products.length > 0 ? (
           <div className="grid gap-6 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {products.map((value, index) => (
               <div
