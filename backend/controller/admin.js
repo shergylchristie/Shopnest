@@ -47,7 +47,7 @@ const addProductController = async (req, res) => {
         .json({ message: "Please upload at least one image." });
     }
 
-    const images = files.map((file) => file.filename);
+    const images = files.map((file) => file.path);
 
     const record = new ProductCollection({
       title: title,
@@ -127,7 +127,7 @@ const editProductController = async (req, res) => {
     if (stock !== undefined) product.stock = stock;
 
     if (files.length) {
-      const newImages = files.map((file) => file.filename);
+       const newImages = files.map((file) => file.path);
 
       product.images = [...(product.images || []), ...newImages];
 

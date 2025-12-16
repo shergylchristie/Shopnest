@@ -1,20 +1,18 @@
-const multer = require("multer")
-const path = require("path")
+import multer from "multer";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
+import cloudinary from "../config/cloudinary.js";
 
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.join(__dirname,"../public/uploads"))
-  },
-  filename: function (req, file, cb) {
-    cb(null,Date.now()+"_"+file.originalname)
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "shopnest",
+    allowed_formats: ["jpg", "jpeg", "png", "webp"],
   },
 });
 
 const uploads = multer({
-  storage:storage,
-  limits:{fileSize:1024*1024*5}
-})
+  storage,
+  limits: { fileSize: 1024 * 1024 * 5 }, // 5MB
+});
 
-
-module.exports = uploads
+export default uploads;
