@@ -17,7 +17,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { appLogout } from "../features/appActions";
 import { apiFetch } from "../apiClient";
 
-
 export default function Navbar({ token, setToken, setActiveCategory }) {
   const [navOpen, setNavOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -410,7 +409,7 @@ export default function Navbar({ token, setToken, setActiveCategory }) {
                         >
                           {item.type === "title" && item.product.image && (
                             <img
-                              src={`/uploads/${item.product.image}`}
+                              src={item.product.image}
                               alt={item.product.title}
                               className="w-12 h-12 object-cover rounded-md flex-shrink-0"
                             />

@@ -5,7 +5,6 @@ import toast from "react-hot-toast";
 import { MdDelete, MdEdit } from "react-icons/md";
 import { apiFetch } from "../apiClient";
 
-
 const ManageProducts = () => {
   const [products, setProduct] = useState([]);
   const token = localStorage.getItem("token");
@@ -67,7 +66,7 @@ const ManageProducts = () => {
                 className="bg-slate-50 rounded-sm shadow-lg p-1 md:p-5 flex flex-col h-full"
               >
                 <img
-                  src={`/uploads/${value.image}`}
+                  src={value.image}
                   alt="Product"
                   className="w-full h-20 md:h-40 rounded-sm object-contain"
                 />
