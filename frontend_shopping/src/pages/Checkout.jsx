@@ -3,10 +3,9 @@ import toast from "react-hot-toast";
 import { FiShoppingCart, FiLock } from "react-icons/fi";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { fetchCart, cartTotal } from "../features/cartSlice";
-import { clearCart } from "../features/cartSlice";
+import { fetchCart, cartTotal, clearCart } from "../features/cartSlice";
 import { apiFetch } from "../apiClient";
-
+import { Skeleton } from "@mui/material";
 
 const indianStates = [
   "Andhra Pradesh",
@@ -47,6 +46,110 @@ const indianStates = [
   "Puducherry",
 ];
 
+const CheckoutSkeleton = () => {
+  return (
+    <div className="h-full bg-slate-50 flex items-center justify-center px-3 py-4">
+      <div className="w-full max-w-6xl bg-white rounded-2xl shadow-md border border-slate-100 p-4 sm:p-6 md:p-8">
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-2">
+            <FiShoppingCart className="text-lg sm:text-xl" />
+            <Skeleton variant="text" width={120} height={24} />
+          </div>
+          <div className="flex items-center gap-1 text-xs text-slate-500">
+            <FiLock className="text-sm" />
+            <Skeleton variant="text" width={80} height={16} />
+          </div>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-[2fr,1fr]">
+          <div className="space-y-6">
+            <Skeleton variant="text" width={140} height={18} />
+            <div className="rounded-2xl border border-slate-200 bg-slate-50/60 p-3 sm:p-4 space-y-4">
+              <div className="flex justify-between gap-3">
+                <div className="flex-1 space-y-2">
+                  <Skeleton variant="text" width="70%" height={18} />
+                  <Skeleton variant="text" width="50%" height={14} />
+                  <Skeleton variant="text" width="40%" height={14} />
+                  <Skeleton variant="text" width="90%" height={16} />
+                  <Skeleton variant="text" width="60%" height={14} />
+                </div>
+                <Skeleton
+                  variant="rectangular"
+                  width={130}
+                  height={36}
+                  className="rounded-xl"
+                />
+              </div>
+
+              <Skeleton
+                variant="rectangular"
+                height={120}
+                className="rounded-xl"
+              />
+            </div>
+          </div>
+
+          <aside className="space-y-4 rounded-2xl border border-slate-100 bg-slate-50/60 p-4 sm:p-5 md:p-6">
+            <div className="flex items-center justify-between">
+              <Skeleton variant="text" width={110} height={18} />
+              <Skeleton variant="text" width={60} height={14} />
+            </div>
+
+            <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="flex items-center justify-between gap-3"
+                >
+                  <Skeleton variant="text" width="65%" height={16} />
+                  <Skeleton variant="text" width={50} height={16} />
+                </div>
+              ))}
+            </div>
+
+            <div className="h-px bg-slate-200" />
+
+            <div className="space-y-2 text-xs sm:text-sm">
+              <div className="flex items-center justify-between">
+                <Skeleton variant="text" width={70} height={14} />
+                <Skeleton variant="text" width={50} height={14} />
+              </div>
+              <div className="flex items-center justify-between">
+                <Skeleton variant="text" width={70} height={14} />
+                <Skeleton variant="text" width={50} height={14} />
+              </div>
+              <div className="flex items-center justify-between">
+                <Skeleton variant="text" width={90} height={14} />
+                <Skeleton variant="text" width={50} height={14} />
+              </div>
+
+              <div className="h-px bg-slate-200" />
+
+              <div className="flex items-center justify-between">
+                <Skeleton variant="text" width={60} height={16} />
+                <Skeleton variant="text" width={70} height={16} />
+              </div>
+            </div>
+
+            <Skeleton
+              variant="rectangular"
+              height={40}
+              className="rounded-xl"
+            />
+            <Skeleton
+              variant="rectangular"
+              height={40}
+              className="rounded-xl"
+            />
+
+            <Skeleton variant="text" width="80%" height={12} />
+          </aside>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const CheckoutPage = () => {
   const cartData = useSelector((state) => state.cartItem.cart);
   const carttInfo = useSelector((state) => state.cartItem);
@@ -60,6 +163,7 @@ const CheckoutPage = () => {
   const [showAddressDropdown, setShowAddressDropdown] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [prevAddressIds, setPrevAddressIds] = useState([]);
+  const [loadingCheckout, setLoadingCheckout] = useState(false);
 
   const [newAddress, setNewAddress] = useState({
     name: "",
@@ -80,8 +184,16 @@ const CheckoutPage = () => {
       navigate("/login");
       return;
     }
-    if (userid) dispatch(fetchCart(userid));
-    loadUser();
+    const init = async () => {
+      try {
+        setLoadingCheckout(true);
+        if (userid) await dispatch(fetchCart(userid));
+        await loadUser();
+      } finally {
+        setLoadingCheckout(false);
+      }
+    };
+    init();
   }, [dispatch, navigate, userid, token]);
 
   useEffect(() => {
@@ -287,6 +399,8 @@ const CheckoutPage = () => {
       toast.error("Something went wrong while starting the payment.");
     }
   };
+
+  if (loadingCheckout) return <CheckoutSkeleton />;
 
   return (
     <div className="h-full bg-slate-50 flex items-center justify-center px-3 py-4">
@@ -570,7 +684,7 @@ const CheckoutPage = () => {
                               <button
                                 onClick={async () => {
                                   await handleAddAddress();
-                                  setShowAddForm(false); // return to list
+                                  setShowAddForm(false);
                                 }}
                                 className="rounded-xl bg-slate-900 text-white px-4 py-2 text-sm w-full"
                               >

@@ -11,7 +11,94 @@ import {
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { apiFetch } from "../apiClient";
+import { Skeleton } from "@mui/material";
 
+const ProfilePageSkeleton = () => {
+  return (
+    <div className="bg-slate-50 flex items-center justify-center px-4 py-4 md:py-8">
+      <div className="w-full bg-white rounded-2xl shadow-md border border-slate-100 p-5 md:p-8 max-w-3xl">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-2">
+            <FiUser className="text-xl" />
+            <Skeleton variant="text" width={120} height={24} />
+          </div>
+          <Skeleton
+            variant="rectangular"
+            width={110}
+            height={32}
+            className="rounded-full"
+          />
+        </div>
+
+        <div className="space-y-6">
+          <section className="rounded-2xl border border-slate-100 bg-slate-50/60 p-4 md:p-5 space-y-4">
+            <div className="flex items-center gap-4">
+              <Skeleton variant="circular" width={56} height={56} />
+              <div>
+                <Skeleton variant="text" width={160} height={18} />
+                <Skeleton variant="text" width={120} height={14} />
+              </div>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2 text-sm">
+              <div className="flex items-start gap-3">
+                <FiMail className="text-slate-400 mt-0.5" />
+                <div className="w-full">
+                  <Skeleton variant="text" width={60} height={14} />
+                  <Skeleton variant="text" width="80%" height={18} />
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <FiPhone className="text-slate-400 mt-0.5" />
+                <div className="w-full">
+                  <Skeleton variant="text" width={60} height={14} />
+                  <Skeleton variant="text" width="50%" height={18} />
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <FiShield className="text-slate-400 mt-0.5" />
+                <div className="w-full">
+                  <Skeleton variant="text" width={90} height={14} />
+                  <Skeleton variant="text" width={70} height={18} />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section className="rounded-2xl border border-slate-100 bg-slate-50/60 p-4 md:p-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <Skeleton variant="text" width={140} height={18} />
+              <Skeleton variant="text" width={60} height={16} />
+            </div>
+
+            <div className="space-y-3 text-sm">
+              <div className="rounded-xl border border-slate-200 bg-white px-3 py-3 flex gap-3">
+                <FiMapPin className="text-slate-400 mt-0.5" />
+                <div className="flex-1 space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <Skeleton variant="text" width={80} height={16} />
+                    <Skeleton
+                      variant="rectangular"
+                      width={60}
+                      height={18}
+                      className="rounded-full"
+                    />
+                  </div>
+                  <Skeleton variant="text" width="100%" height={16} />
+                  <Skeleton variant="text" width="90%" height={16} />
+                </div>
+              </div>
+
+              <Skeleton variant="text" width={120} height={16} />
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const ProfilePage = () => {
   const id = localStorage.getItem("user");
@@ -25,6 +112,8 @@ const ProfilePage = () => {
   const [showProfile, setShowProfile] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
   const [showAddress, setShowAddress] = useState(false);
+  const [loadingUser, setLoadingUser] = useState(false);
+
   const initials = user.name?.match(/\b\w/g)?.join("").toUpperCase() || "?";
 
   const hasAddress = user.address && user.address.length > 0;
@@ -48,18 +137,19 @@ const ProfilePage = () => {
   useEffect(() => {
     const loadUser = async () => {
       try {
+        setLoadingUser(true);
         const res = await apiFetch(`/api/getUser/${id}`);
         if (!res.ok) throw new Error();
         const data = await res.json();
         setUser(data);
       } catch {
         toast.error("Failed to load user");
+      } finally {
+        setLoadingUser(false);
       }
     };
     if (id) loadUser();
   }, [id]);
-
-  if (!authChecked) return null;
 
   const handleSetDefault = async (addressId) => {
     try {
@@ -99,7 +189,9 @@ const ProfilePage = () => {
     }
   };
 
+  if (!authChecked) return null;
   if (!showProfile) return null;
+  if (loadingUser) return <ProfilePageSkeleton />;
 
   return (
     <div className="bg-slate-50 flex items-center justify-center px-4 py-4 md:py-8">
@@ -236,7 +328,7 @@ const ProfilePage = () => {
 
                 {addresses.length > 1 ? (
                   <button
-                    onClick={() => setShowAddress((show) => !show)}
+                    onClick={() => setShowAddress((s) => !s)}
                     className="text-xs text-slate-600 hover:text-slate-900"
                   >
                     {showAddress ? "Hide Addresses" : "Show All Addresses"}

@@ -10,7 +10,7 @@ import {
 } from "react-icons/fi";
 import { useNavigate, useParams } from "react-router-dom";
 import { apiFetch } from "../apiClient";
-
+import { Skeleton } from "@mui/material";
 
 const indianStates = [
   "Andhra Pradesh",
@@ -53,6 +53,158 @@ const indianStates = [
 
 const addressLabels = ["Home", "Work", "Other"];
 
+const EditProfileSkeleton = () => (
+  <div className="bg-slate-50 flex items-center justify-center px-4 py-2 md:py-5">
+    <div className="w-full bg-white rounded-2xl shadow-md border border-slate-100 p-5 max-w-5xl">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <button className="inline-flex items-center justify-center h-8 w-8 rounded-full border border-slate-200">
+            <FiArrowLeft className="text-sm" />
+          </button>
+          <div className="flex items-center gap-2">
+            <FiUser className="text-lg sm:text-xl" />
+            <Skeleton variant="text" width={120} height={22} />
+          </div>
+        </div>
+        <Skeleton
+          variant="rectangular"
+          width={130}
+          height={32}
+          className="rounded-full hidden sm:block"
+        />
+      </div>
+
+      <div className="grid gap-6 lg:gap-8 lg:grid-cols-[2fr,1.2fr]">
+        <div className="space-y-6">
+          <section className="rounded-2xl border border-slate-100 bg-slate-50/60 p-4 sm:p-5 space-y-3 sm:space-y-4">
+            <div className="flex items-center gap-4">
+              <Skeleton variant="circular" width={64} height={64} />
+              <div className="space-y-1">
+                <Skeleton variant="text" width={160} height={18} />
+                <Skeleton variant="text" width={180} height={14} />
+              </div>
+            </div>
+            <Skeleton
+              variant="text"
+              width={120}
+              height={16}
+              className="sm:hidden"
+            />
+            <div className="mt-2 space-y-4">
+              <Skeleton
+                variant="rectangular"
+                height={40}
+                className="rounded-xl"
+              />
+              <Skeleton
+                variant="rectangular"
+                height={40}
+                className="rounded-xl"
+              />
+              <Skeleton
+                variant="rectangular"
+                height={40}
+                className="rounded-xl sm:hidden"
+              />
+            </div>
+          </section>
+
+          <section className="rounded-2xl border border-slate-100 bg-slate-50/60 p-4 sm:p-5 space-y-3 sm:space-y-4">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex flex-col">
+                <Skeleton variant="text" width={130} height={18} />
+                <Skeleton variant="text" width={140} height={14} />
+              </div>
+              <Skeleton
+                variant="circular"
+                width={28}
+                height={28}
+                className="sm:hidden"
+              />
+            </div>
+            <div className="space-y-3">
+              <Skeleton
+                variant="rectangular"
+                height={40}
+                className="rounded-xl"
+              />
+              <Skeleton
+                variant="rectangular"
+                height={40}
+                className="rounded-xl"
+              />
+              <Skeleton
+                variant="rectangular"
+                height={40}
+                className="rounded-xl"
+              />
+              <Skeleton
+                variant="rectangular"
+                height={40}
+                className="rounded-xl sm:hidden"
+              />
+            </div>
+          </section>
+        </div>
+
+        <div className="space-y-6">
+          <section className="rounded-2xl border border-slate-100 bg-slate-50/60 p-4 sm:p-5 space-y-3 sm:space-y-4">
+            <div className="flex items-center justify-between">
+              <Skeleton variant="text" width={90} height={18} />
+              <Skeleton
+                variant="circular"
+                width={28}
+                height={28}
+                className="sm:hidden"
+              />
+            </div>
+            <div className="space-y-3">
+              <Skeleton
+                variant="rectangular"
+                height={40}
+                className="rounded-xl"
+              />
+              <Skeleton
+                variant="rectangular"
+                height={40}
+                className="rounded-xl"
+              />
+              <Skeleton
+                variant="rectangular"
+                height={40}
+                className="rounded-xl"
+              />
+              <Skeleton
+                variant="rectangular"
+                height={40}
+                className="rounded-xl"
+              />
+            </div>
+          </section>
+
+          <section className="rounded-2xl border border-rose-100 bg-rose-50/70 p-4 sm:p-5 space-y-3">
+            <div className="flex items-center justify-between">
+              <Skeleton variant="text" width={110} height={18} />
+              <Skeleton
+                variant="circular"
+                width={28}
+                height={28}
+                className="sm:hidden"
+              />
+            </div>
+            <Skeleton variant="text" width="100%" height={14} />
+            <Skeleton
+              variant="rectangular"
+              height={40}
+              className="rounded-xl"
+            />
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
 const EditProfilePage = () => {
   const id = localStorage.getItem("user");
   const { addId } = useParams();
@@ -79,6 +231,7 @@ const EditProfilePage = () => {
   const [authChecked, setAuthChecked] = useState(false);
   const [showPass, setShowPass] = useState({});
   const [username, setUsername] = useState("");
+  const [loadingUser, setLoadingUser] = useState(false);
 
   const [profileOpen, setProfileOpen] = useState(!addId);
   const [addressOpen, setAddressOpen] = useState(!!addId);
@@ -111,6 +264,7 @@ const EditProfilePage = () => {
   useEffect(() => {
     const loadUser = async () => {
       try {
+        setLoadingUser(true);
         const res = await apiFetch(`/api/getUser/${id}`);
         if (!res.ok) throw new Error();
         const data = await res.json();
@@ -118,6 +272,8 @@ const EditProfilePage = () => {
         setUsername(data.name);
       } catch {
         toast.error("Failed to load user data");
+      } finally {
+        setLoadingUser(false);
       }
     };
 
@@ -163,6 +319,8 @@ const EditProfilePage = () => {
   }, [addId, user.address, user.name, user.phone]);
 
   if (!authChecked) return null;
+  if (!showProfile) return null;
+  if (loadingUser) return <EditProfileSkeleton />;
 
   const handleChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
@@ -268,8 +426,6 @@ const EditProfilePage = () => {
       toast.error("Something went wrong");
     }
   };
-
-  if (!showProfile) return null;
 
   return (
     <div className="bg-slate-50 flex items-center justify-center px-4 py-2 md:py-5">
