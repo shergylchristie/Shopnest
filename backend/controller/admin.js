@@ -137,6 +137,12 @@ const addProductController = async (req, res) => {
       .json({ message: "Product Added Successfully", product: record });
   } catch (error) {
     console.error("addProductController error:", error);
+    console.error("addProductController req.body:", req.body);
+    console.error("addProductController req.files:", req.files);
+
+    if (process.env.NODE_ENV !== "production") {
+      return res.status(500).json({ message: "Internal Server Error", error: error.message });
+    }
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
@@ -364,6 +370,12 @@ const editProductController = async (req, res) => {
     return res.status(200).json({ message: "Details Updated Successfully" });
   } catch (error) {
     console.error("editProductController error:", error);
+    console.error("editProductController req.body:", req.body);
+    console.error("editProductController req.files:", req.files);
+
+    if (process.env.NODE_ENV !== "production") {
+      return res.status(500).json({ message: "Internal Server Error", error: error.message });
+    }
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
