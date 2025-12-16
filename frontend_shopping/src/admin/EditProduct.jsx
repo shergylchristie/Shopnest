@@ -4,7 +4,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { apiFetch } from "../apiClient";
 
-
 const EditProduct = () => {
   const [product, setProduct] = useState({
     title: "",
@@ -13,8 +12,11 @@ const EditProduct = () => {
     category: "",
     stock: "",
   });
-  console.log(product);
+  const [existingImages, setExistingImages] = useState([]); // { url, publicId }
+  const [removedPublicIds, setRemovedPublicIds] = useState([]);
+  const [replaceAll, setReplaceAll] = useState(false);
   const [images, setImages] = useState([]);
+  const [uploading, setUploading] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams();
   const token = localStorage.getItem("token");
@@ -29,6 +31,12 @@ const EditProduct = () => {
       });
       const result = await response.json();
       setProduct(result);
+
+      const existing = (result.images || []).map((url, idx) => ({
+        url,
+        publicId: result.imagesPublicIds?.[idx] || "",
+      }));
+      setExistingImages(existing);
     } catch (error) {
       toast.error(error);
     }
@@ -48,6 +56,16 @@ const EditProduct = () => {
     });
 
     try {
+      setUploading(true);
+
+      // attach removed public ids and replace flag
+      if (removedPublicIds.length) {
+        formdata.append("removePublicIds", JSON.stringify(removedPublicIds));
+      }
+      if (replaceAll) {
+        formdata.append("replaceImages", "true");
+      }
+
       const response = await apiFetch(`/api/updateproduct/${id}`, {
         method: "PUT",
         headers: {
@@ -56,11 +74,13 @@ const EditProduct = () => {
         body: formdata,
       });
       const result = await response.json();
+      setUploading(false);
       if (response.ok) {
         toast.success(result.message);
         navigate("/admin/manageProducts");
       } else toast.error(result.message);
     } catch (error) {
+      setUploading(false);
       toast.error(error);
     }
   }
@@ -196,6 +216,39 @@ const EditProduct = () => {
               >
                 Images
               </label>
+
+              {/* Existing images preview with remove option */}
+              {existingImages.length > 0 && (
+                <div className="mb-3 grid grid-cols-3 gap-3">
+                  {existingImages.map((img, idx) => (
+                    <div key={idx} className="border rounded p-1 relative">
+                      <img
+                        src={img.url}
+                        alt={`existing-${idx}`}
+                        className="w-full h-20 object-contain"
+                      />
+                      <div className="text-xs mt-1 text-gray-600">
+                        {img.publicId || "(no publicId)"}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          // mark for removal
+                          if (img.publicId)
+                            setRemovedPublicIds((p) => [...p, img.publicId]);
+                          setExistingImages((prev) =>
+                            prev.filter((_, i) => i !== idx)
+                          );
+                        }}
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded px-1 text-xs"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               <input
                 id="image"
                 type="file"
@@ -204,9 +257,26 @@ const EditProduct = () => {
                 onChange={handleImagesChange}
                 className="w-full border border-gray-300 rounded px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
-              <p className="font-extralight text-sm text-end">
-                Max file size 5MB
-              </p>
+
+              <div className="flex items-center justify-between mt-1">
+                <p className="font-extralight text-sm text-end">
+                  Max file size 5MB
+                </p>
+                <label className="text-xs flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={replaceAll}
+                    onChange={(e) => {
+                      setReplaceAll(e.target.checked);
+                      if (e.target.checked) {
+                        setExistingImages([]);
+                      }
+                    }}
+                  />
+                  Replace all
+                </label>
+              </div>
+
               {images.length > 0 && (
                 <div className="mt-2 space-y-1">
                   {images.map((file, idx) => (
@@ -220,9 +290,12 @@ const EditProduct = () => {
 
             <button
               type="submit"
-              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded"
+              disabled={uploading}
+              className={`w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded ${
+                uploading ? "opacity-60 cursor-not-allowed" : ""
+              }`}
             >
-              Save Changes
+              {uploading ? "Saving..." : "Save Changes"}
             </button>
           </form>
         </div>

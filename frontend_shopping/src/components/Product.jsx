@@ -19,10 +19,12 @@ import {
   savewishlist,
 } from "../features/wishlistSlice";
 import { apiFetch } from "../apiClient";
-
+import { CircularProgress, Box } from "@mui/material";
 
 const Product = ({ categoryName = "All" }) => {
   const [products, setProducts] = useState([]);
+  const [loadingProducts, setLoadingProducts] = useState(false);
+
   const dispatch = useDispatch();
   const wishlist = useSelector((state) => state.wishlistItem.wishlist);
   const cartData = useSelector((state) => state.cartItem.cart);
@@ -33,8 +35,8 @@ const Product = ({ categoryName = "All" }) => {
 
   async function handlegetProducts() {
     try {
+      setLoadingProducts(true);
       let url = "/api/displayproducts";
-
       if (categoryName && categoryName !== "All") {
         url = `/api/displayproducts?category=${categoryName}`;
       }
@@ -43,6 +45,9 @@ const Product = ({ categoryName = "All" }) => {
       setProducts(result);
     } catch (error) {
       console.log(error);
+      toast.error("Failed to load products");
+    } finally {
+      setLoadingProducts(false);
     }
   }
 
@@ -86,11 +91,19 @@ const Product = ({ categoryName = "All" }) => {
         })
       );
     }
-  }, [cartData, dispatch]);
+  }, [cartData, dispatch, fetchStatus, token, userid]);
 
   useEffect(() => {
     handlegetProducts();
   }, [categoryName]);
+
+  if (loadingProducts) {
+    return (
+      <Box className="flex justify-center items-center h-64">
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto pb-10">
@@ -233,12 +246,12 @@ const Product = ({ categoryName = "All" }) => {
                 <button onClick={() => handleWishlist(value)}>
                   <FaHeart
                     className={`my-auto text-xl sm:text-3xl hover:scale-105 transition-transform
-                           ${
-                             isInWishlist
-                               ? "fill-red-500 hover:fill-red-600"
-                               : "fill-gray-200 hover:fill-gray-300"
-                           }
-                            `}
+                              ${
+                                isInWishlist
+                                  ? "fill-red-500 hover:fill-red-600"
+                                  : "fill-gray-200 hover:fill-gray-300"
+                              }
+                               `}
                   />
                 </button>
               </div>

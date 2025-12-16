@@ -7,8 +7,12 @@ const product = new Schema({
   description: { type: String, required: true },
   category: { type: String, required: true },
   stock: { type: String, default: "Out-Of-Stock" },
+
   image: { type: String, required: true },
   images: [{ type: String }],
+
+  imagePublicId: { type: String, default: "" },
+  imagesPublicIds: [{ type: String }],
 });
 
 module.exports = model("product", product);
