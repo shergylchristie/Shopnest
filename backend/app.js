@@ -9,6 +9,9 @@ const connectDB = require("./config/db")
 connectDB()
 
 
+app.get("/api/health", (req, res) => {
+  res.status(200).send("OK");
+});
 app.use(express.static("public"))
 app.use(cors());
 app.use(express.json())
