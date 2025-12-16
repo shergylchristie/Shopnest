@@ -1,7 +1,7 @@
 const apiRoutes = require("express").Router();
 const userController = require("../controller/user");
 const adminController = require("../controller/admin");   
-const uploads = require("../middleware/uploads");
+const uploads = require("../middleware/multer");
 const { auth, adminAuth } = require("../middleware/auth");
 
 
