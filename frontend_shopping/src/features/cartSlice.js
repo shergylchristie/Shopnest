@@ -1,4 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { apiFetch } from "../apiClient";
+
 
 const initialState = {
   cart: [],
@@ -11,7 +13,7 @@ export const saveCart = createAsyncThunk("cart/save", async (cartInfo) => {
   const token = localStorage.getItem("token");
 
   {
-    const response = await fetch("/api/cart/save", {
+    const response = await apiFetch("/api/cart/save", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -29,7 +31,7 @@ export const fetchCart = createAsyncThunk(
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch(`/api/cart/fetch/${userid}`, {
+      const response = await apiFetch(`/api/cart/fetch/${userid}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -52,13 +54,16 @@ export const deleteCartItemThunk = createAsyncThunk(
   async ({ userid, productId }, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`/api/cart/delete/${userid}/${productId}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await apiFetch(
+        `/api/cart/delete/${userid}/${productId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       const data = await response.json();
       console.log("Delete Response:", data);
 
@@ -74,7 +79,7 @@ export const mergeGuestCart = createAsyncThunk(
   async ({ userid, guestCart }) => {
     const token = localStorage.getItem("token");
 
-    const res = await fetch("/api/cart/merge", {
+    const res = await apiFetch("/api/cart/merge", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -86,7 +91,6 @@ export const mergeGuestCart = createAsyncThunk(
     return res.json();
   }
 );
-
 
 export const cartSlice = createSlice({
   name: "cart",
@@ -144,7 +148,6 @@ export const cartSlice = createSlice({
       state.TotalPrice = Math.round(totalPrice * 100) / 100;
       state.TotalQuantity = totalQuantity;
     },
-
   },
   extraReducers: (builder) => {
     builder.addCase(saveCart.fulfilled, (state, actions) =>
@@ -180,7 +183,7 @@ export const {
   decreaseQuantity,
   cartTotal,
   clearCart,
-  markCartReady
+  markCartReady,
 } = cartSlice.actions;
 
 export default cartSlice.reducer;

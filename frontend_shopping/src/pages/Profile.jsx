@@ -10,6 +10,8 @@ import {
 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { apiFetch } from "../apiClient";
+
 
 const ProfilePage = () => {
   const id = localStorage.getItem("user");
@@ -46,7 +48,7 @@ const ProfilePage = () => {
   useEffect(() => {
     const loadUser = async () => {
       try {
-        const res = await fetch(`/api/getUser/${id}`);
+        const res = await apiFetch(`/api/getUser/${id}`);
         if (!res.ok) throw new Error();
         const data = await res.json();
         setUser(data);
@@ -61,7 +63,7 @@ const ProfilePage = () => {
 
   const handleSetDefault = async (addressId) => {
     try {
-      const res = await fetch(`/api/setDefault/${id}/${addressId}`, {
+      const res = await apiFetch(`/api/setDefault/${id}/${addressId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
       });
@@ -81,7 +83,7 @@ const ProfilePage = () => {
 
   const handleDeleteAddress = async (addressId) => {
     try {
-      const res = await fetch(`/api/deleteAddress/${id}/${addressId}`, {
+      const res = await apiFetch(`/api/deleteAddress/${id}/${addressId}`, {
         method: "DELETE",
       });
       const data = await res.json();

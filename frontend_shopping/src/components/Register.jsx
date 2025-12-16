@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { FaTimes, FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { apiFetch } from "../apiClient";
+
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -34,11 +36,11 @@ const Register = () => {
       toast.error("Passwords do not match");
       return;
     }
-    
+
     const formdata = form;
 
     try {
-      const response = await fetch("/api/registerUser", {
+      const response = await apiFetch("/api/registerUser", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formdata),

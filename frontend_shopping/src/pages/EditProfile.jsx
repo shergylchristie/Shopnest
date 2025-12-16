@@ -9,6 +9,8 @@ import {
   FiChevronDown,
 } from "react-icons/fi";
 import { useNavigate, useParams } from "react-router-dom";
+import { apiFetch } from "../apiClient";
+
 
 const indianStates = [
   "Andhra Pradesh",
@@ -109,7 +111,7 @@ const EditProfilePage = () => {
   useEffect(() => {
     const loadUser = async () => {
       try {
-        const res = await fetch(`/api/getUser/${id}`);
+        const res = await apiFetch(`/api/getUser/${id}`);
         if (!res.ok) throw new Error();
         const data = await res.json();
         setUser(data);
@@ -172,7 +174,7 @@ const EditProfilePage = () => {
 
   const handleSave = async () => {
     try {
-      const profileRes = await fetch(`/api/changeuserprofile/${id}`, {
+      const profileRes = await apiFetch(`/api/changeuserprofile/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -201,7 +203,7 @@ const EditProfilePage = () => {
           : `/api/changeuseraddress/${id}`;
         const method = isEditing ? "PUT" : "POST";
 
-        const res = await fetch(url, {
+        const res = await apiFetch(url, {
           method,
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(newaddress),
@@ -248,7 +250,7 @@ const EditProfilePage = () => {
     }
 
     try {
-      const res = await fetch(`/api/changepass/${id}`, {
+      const res = await apiFetch(`/api/changepass/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

@@ -3,13 +3,15 @@ import Slidebar from "../admin/Slidebar";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { MdDelete, MdEdit } from "react-icons/md";
+import { apiFetch } from "../apiClient";
+
 
 const ManageProducts = () => {
   const [products, setProduct] = useState([]);
   const token = localStorage.getItem("token");
 
   async function handleGetProducts() {
-    const response = await fetch("/api/getproducts", {
+    const response = await apiFetch("/api/getproducts", {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -21,7 +23,7 @@ const ManageProducts = () => {
 
   async function handleDelete(id) {
     try {
-      const response = await fetch(`/api/deleteproduct/${id}`, {
+      const response = await apiFetch(`/api/deleteproduct/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,

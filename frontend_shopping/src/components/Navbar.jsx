@@ -15,6 +15,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Badge } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { appLogout } from "../features/appActions";
+import { apiFetch } from "../apiClient";
 
 
 export default function Navbar({ token, setToken, setActiveCategory }) {
@@ -25,10 +26,11 @@ export default function Navbar({ token, setToken, setActiveCategory }) {
   const [isLoading, setIsLoading] = useState(false);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   const cartCount = useSelector((state) => state.cartItem.cart.length);
-  const wishlistCount = useSelector((state) => state.wishlistItem.wishlist.length);
+  const wishlistCount = useSelector(
+    (state) => state.wishlistItem.wishlist.length
+  );
 
   const dispatch = useDispatch();
-
 
   const navigate = useNavigate();
 
@@ -77,7 +79,7 @@ export default function Navbar({ token, setToken, setActiveCategory }) {
     const timeout = setTimeout(() => {
       setIsLoading(true);
 
-      fetch(`/api/search?query=${encodeURIComponent(query)}`)
+      apiFetch(`/api/search?query=${encodeURIComponent(query)}`)
         .then((res) => res.json())
         .then((data) => {
           setResults(Array.isArray(data) ? data : []);

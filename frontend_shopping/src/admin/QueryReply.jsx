@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import Slidebar from "./Slidebar";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
+import { apiFetch } from "../apiClient";
+
 
 const QueryReply = () => {
   const [emailData, setEmailData] = useState({
@@ -17,7 +19,7 @@ const QueryReply = () => {
 
   async function handleTo() {
     try {
-      const response = await fetch(`/api/getEmail/${id}`, {
+      const response = await apiFetch(`/api/getEmail/${id}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -36,14 +38,13 @@ const QueryReply = () => {
 
   async function handleForm(e) {
     e.preventDefault();
-    if(!emailData.reply || !emailReply.sub)
-      return toast.error("Please fill all the fields")
+    if (!emailData.reply || !emailReply.sub)
+      return toast.error("Please fill all the fields");
 
     const emaildata = emailData;
 
-
     try {
-      const response = await fetch("/api/sendReply", {
+      const response = await apiFetch("/api/sendReply", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

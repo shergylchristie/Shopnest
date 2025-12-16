@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import Slidebar from "../admin/Slidebar";
 import { Link, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
+import { apiFetch } from "../apiClient";
+
 
 const ManageQuery = () => {
   const [query, setQuery] = useState([]);
@@ -10,7 +12,7 @@ const ManageQuery = () => {
 
   async function handleDelete(id) {
     try {
-      const response = await fetch(`/api/deleteQuery/${id}`, {
+      const response = await apiFetch(`/api/deleteQuery/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -28,7 +30,7 @@ const ManageQuery = () => {
 
   async function handleQuery() {
     try {
-      const response = await fetch("/api/getQuery", {
+      const response = await apiFetch("/api/getQuery", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,

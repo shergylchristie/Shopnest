@@ -5,6 +5,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { fetchCart, cartTotal } from "../features/cartSlice";
 import { clearCart } from "../features/cartSlice";
+import { apiFetch } from "../apiClient";
+
 
 const indianStates = [
   "Andhra Pradesh",
@@ -88,7 +90,7 @@ const CheckoutPage = () => {
 
   async function loadUser() {
     try {
-      const res = await fetch(`/api/getUser/${userid}`);
+      const res = await apiFetch(`/api/getUser/${userid}`);
       if (!res.ok) throw new Error();
       const data = await res.json();
       let index = 0;
@@ -137,7 +139,7 @@ const CheckoutPage = () => {
     }
 
     try {
-      const res = await fetch(`/api/changeuseraddress/${userid}`, {
+      const res = await apiFetch(`/api/changeuseraddress/${userid}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newAddress),
@@ -203,7 +205,7 @@ const CheckoutPage = () => {
     try {
       const amount = totalprice;
       const currency = "INR";
-      const res = await fetch("/api/createOrder", {
+      const res = await apiFetch("/api/createOrder", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ amount, currency }),
@@ -221,7 +223,7 @@ const CheckoutPage = () => {
         handler: function (response) {
           const token = localStorage.getItem("token");
           const userid = localStorage.getItem("user");
-          fetch("/api/verify", {
+          apiFetch("/api/verify", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

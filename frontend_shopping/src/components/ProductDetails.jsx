@@ -18,6 +18,8 @@ import {
   saveCart,
   deleteCartItemThunk,
 } from "../features/cartSlice";
+import { apiFetch } from "../apiClient";
+
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
@@ -38,11 +40,10 @@ const ProductDetails = () => {
   const userid = localStorage.getItem("user");
   const token = localStorage.getItem("token");
 
-
   async function fetchProduct() {
     try {
       setIsLoading(true);
-      const response = await fetch(`/api/displaysingleproduct/${id}`);
+      const response = await apiFetch(`/api/displaysingleproduct/${id}`);
       const result = await response.json();
       setProduct(result);
     } catch (error) {
@@ -52,32 +53,30 @@ const ProductDetails = () => {
     }
   }
 
-   const isInWishlist = wishlist.some((item) => item._id === id);
-   const handleWishlist = (product) => {
-
-     if (isInWishlist) {
-       !token || !userid
-         ? dispatch(deleteWishlistItem(product._id))
-         : dispatch(
-             deleteWishlistItemThunk({
-               userid,
-               productId: product._id,
-             })
-           );
-       toast.success("Removed from Wishlist");
-     } else {
-       !token || !userid
-         ? dispatch(addTowishlist(product))
-         : dispatch(
-             savewishlist({
-               userid,
-               productId: product._id,
-             })
-           );
-           toast.success("Added to Wishlist");
-     }
-   };
-
+  const isInWishlist = wishlist.some((item) => item._id === id);
+  const handleWishlist = (product) => {
+    if (isInWishlist) {
+      !token || !userid
+        ? dispatch(deleteWishlistItem(product._id))
+        : dispatch(
+            deleteWishlistItemThunk({
+              userid,
+              productId: product._id,
+            })
+          );
+      toast.success("Removed from Wishlist");
+    } else {
+      !token || !userid
+        ? dispatch(addTowishlist(product))
+        : dispatch(
+            savewishlist({
+              userid,
+              productId: product._id,
+            })
+          );
+      toast.success("Added to Wishlist");
+    }
+  };
 
   useEffect(() => {
     if (fetchStatus !== "succeeded") return;
@@ -93,7 +92,7 @@ const ProductDetails = () => {
         })
       );
     }
-  }, [ cartData, dispatch]);
+  }, [cartData, dispatch]);
 
   useEffect(() => {
     fetchProduct();

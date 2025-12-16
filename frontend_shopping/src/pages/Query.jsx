@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { apiFetch } from "../apiClient";
+
 
 const Query = () => {
   const [userQuery, setUserQuery] = useState({
@@ -15,7 +17,7 @@ const Query = () => {
     e.preventDefault();
     const formdata = userQuery;
     try {
-      const response = await fetch("/api/userQuery", {
+      const response = await apiFetch("/api/userQuery", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formdata),

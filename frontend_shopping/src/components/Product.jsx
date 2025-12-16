@@ -18,6 +18,8 @@ import {
   deleteWishlistItemThunk,
   savewishlist,
 } from "../features/wishlistSlice";
+import { apiFetch } from "../apiClient";
+
 
 const Product = ({ categoryName = "All" }) => {
   const [products, setProducts] = useState([]);
@@ -36,7 +38,7 @@ const Product = ({ categoryName = "All" }) => {
       if (categoryName && categoryName !== "All") {
         url = `/api/displayproducts?category=${categoryName}`;
       }
-      const response = await fetch(url);
+      const response = await apiFetch(url);
       const result = await response.json();
       setProducts(result);
     } catch (error) {
@@ -94,7 +96,9 @@ const Product = ({ categoryName = "All" }) => {
     <div className="max-w-7xl mx-auto pb-10">
       <div>
         <h1
-          className={`flex justify-center text-2xl sm:text-3xl md:text-4xl font-bold ${categoryName==="All"?"my-10":"mt-5 mb-10"}`}
+          className={`flex justify-center text-2xl sm:text-3xl md:text-4xl font-bold ${
+            categoryName === "All" ? "my-10" : "mt-5 mb-10"
+          }`}
         >
           {categoryName === "All" ? "Products" : categoryName}
         </h1>

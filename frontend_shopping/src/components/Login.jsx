@@ -2,15 +2,11 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { FaTimes, FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import {
-  fetchCart,
-  mergeGuestCart,
-} from "../features/cartSlice";
-import {
-  fetchwishlist,
-  mergeGuestWishlist,
-} from "../features/wishlistSlice";
+import { fetchCart, mergeGuestCart } from "../features/cartSlice";
+import { fetchwishlist, mergeGuestWishlist } from "../features/wishlistSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { apiFetch } from "../apiClient";
+
 
 const Login = ({ setToken }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -37,7 +33,7 @@ const Login = ({ setToken }) => {
     const formdata = login;
 
     try {
-      const response = await fetch("/api/userLogin", {
+      const response = await apiFetch("/api/userLogin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formdata),

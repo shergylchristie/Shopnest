@@ -1,4 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { apiFetch } from "../apiClient";
+
 
 const initialState = {
   wishlist: [],
@@ -6,9 +8,9 @@ const initialState = {
 
 export const fetchwishlist = createAsyncThunk(
   "wishlist/fetch",
-  async ( userid ) => {
+  async (userid) => {
     const token = localStorage.getItem("token");
-    const res = await fetch(`/api/wishlist/fetch/${userid}`, {
+    const res = await apiFetch(`/api/wishlist/fetch/${userid}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return res.json();
@@ -19,25 +21,23 @@ export const savewishlist = createAsyncThunk(
   "wishlist/add",
   async ({ userid, productId }) => {
     const token = localStorage.getItem("token");
-    const res = await fetch(`/api/wishlist/save/${userid}/${productId}`, {
+    const res = await apiFetch(`/api/wishlist/save/${userid}/${productId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      
     });
 
     return res.json();
   }
 );
 
-
 export const deleteWishlistItemThunk = createAsyncThunk(
   "wishlist/delete",
   async ({ userid, productId }) => {
     const token = localStorage.getItem("token");
-    const res = await fetch(`/api/wishlist/delete/${userid}/${productId}`, {
+    const res = await apiFetch(`/api/wishlist/delete/${userid}/${productId}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -50,7 +50,7 @@ export const mergeGuestWishlist = createAsyncThunk(
   async ({ userid, guestWishlist }) => {
     const token = localStorage.getItem("token");
 
-    const res = await fetch("/api/wishlist/merge", {
+    const res = await apiFetch("/api/wishlist/merge", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -88,7 +88,7 @@ const wishlistSlice = createSlice({
         state.wishlist = action.payload.wishlistItems;
       })
       .addCase(savewishlist.fulfilled, (state, action) => {
-        if (action.payload?.wishlistItems){
+        if (action.payload?.wishlistItems) {
           state.wishlist = action.payload.wishlistItems;
         }
       })
@@ -97,7 +97,7 @@ const wishlistSlice = createSlice({
   },
 });
 
-export const { addTowishlist, deleteWishlistItem, markWishlistReady } = wishlistSlice.actions;
+export const { addTowishlist, deleteWishlistItem, markWishlistReady } =
+  wishlistSlice.actions;
 
 export default wishlistSlice.reducer;
-
