@@ -117,7 +117,7 @@ const Product = ({ categoryName = "All" }) => {
             >
               <Link to={`/product/${value._id}`}>
                 <img
-                  src={`/uploads/${value.image}`}
+                  src={value.image}
                   alt="Product"
                   className="w-full h-40 object-contain p-2 rounded-t-md"
                 />

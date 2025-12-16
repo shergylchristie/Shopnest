@@ -90,7 +90,7 @@ const WishlistPage = () => {
                 >
                   <div className="flex space-x-3 sm:space-x-4">
                     <img
-                      src={`/uploads/${item.image}`}
+                      src={item.image}
                       alt={item.title}
                       className="object-contain w-20 h-20 sm:w-24 sm:h-24  rounded-lg flex-shrink-0"
                     />

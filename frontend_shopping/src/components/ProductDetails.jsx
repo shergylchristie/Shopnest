@@ -148,7 +148,7 @@ const ProductDetails = () => {
             {images.map((img, idx) => (
               <SwiperSlide key={idx}>
                 <img
-                  src={`/uploads/${img}`}
+                  src={img}
                   alt={product.title}
                   className="w-full h-full object-contain p-4"
                 />
