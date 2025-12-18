@@ -8,7 +8,6 @@ import { apiFetch } from "../apiClient";
 const ManageProducts = () => {
   const [products, setProduct] = useState([]);
   const token = localStorage.getItem("token");
-  console.log(token);
 
   async function handleGetProducts() {
     const response = await apiFetch("/api/getproducts", {
@@ -17,7 +16,6 @@ const ManageProducts = () => {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log(result);
     const result = await response.json();
     setProduct(result);
   }
@@ -68,7 +66,7 @@ const ManageProducts = () => {
                 className="bg-slate-50 rounded-sm shadow-lg p-1 md:p-5 flex flex-col h-full"
               >
                 <img
-                  src={`/uploads/${value.image}`}
+                  src={value.image || "/no-image.png"}
                   alt="Product"
                   className="w-full h-20 md:h-40 rounded-sm object-contain"
                 />
