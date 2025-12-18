@@ -1,9 +1,8 @@
 const QueryCollection = require("../models/query");
 const ProductCollection = require("../models/product");
-const fs = require("fs").promises;
 const path = require("path");
 const nodemailer = require("nodemailer");
-const UPLOAD_DIR = path.join(__dirname, "..", "public", "uploads");
+
 
 const showQueryController = async (req, res) => {
   const id = req.params.id;
