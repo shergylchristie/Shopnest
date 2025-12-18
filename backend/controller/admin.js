@@ -62,11 +62,11 @@ const addProductController = async (req, res) => {
       imagesPublicIds,
     });
 
-    await record.save();
+    await product.save();
 
     return res.status(201).json({
       message: "Product Added Successfully",
-      product: record,
+      product
     });
   } catch (error) {
     console.error("ADD PRODUCT ERROR:", error);
