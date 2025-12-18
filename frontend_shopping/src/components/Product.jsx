@@ -98,7 +98,8 @@ const Product = ({ categoryName = "All" }) => {
     if (isInWishlist) {
       !token || !userid
         ? dispatch(deleteWishlistItem(value._id))
-        : dispatch(
+        : dispatch(deleteWishlistItem(value._id));
+        dispatch(
             deleteWishlistItemThunk({
               userid,
               productId: value._id,
@@ -108,7 +109,8 @@ const Product = ({ categoryName = "All" }) => {
     } else {
       !token || !userid
         ? dispatch(addTowishlist(value))
-        : dispatch(
+        : dispatch(addTowishlist(value));
+        dispatch(
             savewishlist({
               userid,
               productId: value._id,

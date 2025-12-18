@@ -102,9 +102,10 @@ const ProductDetails = () => {
   const isInWishlist = wishlist.some((item) => item._id === id);
   const handleWishlist = (product) => {
     if (isInWishlist) {
-      !token || !userid
+       !token || !userid
         ? dispatch(deleteWishlistItem(product._id))
-        : dispatch(
+        : dispatch(deleteWishlistItem(product._id));
+        dispatch(
             deleteWishlistItemThunk({
               userid,
               productId: product._id,
@@ -114,7 +115,8 @@ const ProductDetails = () => {
     } else {
       !token || !userid
         ? dispatch(addTowishlist(product))
-        : dispatch(
+        : dispatch(addTowishlist(product));
+        dispatch(
             savewishlist({
               userid,
               productId: product._id,

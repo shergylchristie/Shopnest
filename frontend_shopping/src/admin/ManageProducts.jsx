@@ -9,7 +9,7 @@ const ManageProducts = () => {
   const token = localStorage.getItem("token");
 
   async function handleGetProducts() {
-    const response = await fetch("/api/getproducts", {
+    const response = await apiFetch("/api/getproducts", {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -21,7 +21,7 @@ const ManageProducts = () => {
 
   async function handleDelete(id) {
     try {
-      const response = await fetch(`/api/deleteproduct/${id}`, {
+      const response = await apiFetch(`/api/deleteproduct/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,

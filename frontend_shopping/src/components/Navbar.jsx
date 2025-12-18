@@ -24,10 +24,8 @@ export default function Navbar({ token, setToken, setActiveCategory }) {
   const [results, setResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
-  const cartCount = useSelector((state) => state.cartItem.cart.length);
-  const wishlistCount = useSelector(
-    (state) => state.wishlistItem.wishlist.length
-  );
+  const cartCount = useSelector((state) => state.cartItem.cart.length ?? 0);
+  const wishlistCount = useSelector((state) => state.wishlistItem.wishlist.length ?? 0);
 
   const dispatch = useDispatch();
 

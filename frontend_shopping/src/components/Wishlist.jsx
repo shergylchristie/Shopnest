@@ -120,7 +120,8 @@ const WishlistPage = () => {
                       onClick={() => {
                          !token || !userid
                            ? dispatch(deleteWishlistItem(item))
-                           : dispatch(
+                           : dispatch(deleteWishlistItem(item));
+                            dispatch(
                                deleteWishlistItemThunk({
                                  userid,
                                  productId: item._id,
