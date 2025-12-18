@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { apiFetch } from "../apiClient";
 
 const MAX_IMAGES = 5;
+const MAX_SIZE = 5 * 1024 * 1024;
 
 const EditProduct = () => {
   const [product, setProduct] = useState({
@@ -42,9 +43,7 @@ const EditProduct = () => {
     try {
       const response = await apiFetch(`/api/editproduct/${id}`, {
         method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       const result = await response.json();
       setProduct(result);
@@ -60,6 +59,12 @@ const EditProduct = () => {
   function handleChange(e) {
     setProduct({ ...product, [e.target.name]: e.target.value });
   }
+
+  const activeExistingCount = imageSlots.filter(
+    (img) => !img.isDeleted || img.replacementFile
+  ).length;
+
+  const totalImages = activeExistingCount + newImages.length;
 
   const markDelete = (index) => {
     setImageSlots((prev) =>
@@ -85,6 +90,11 @@ const EditProduct = () => {
   };
 
   const replaceImage = (index, file) => {
+    if (!file || file.size > MAX_SIZE) {
+      toast.error("Image must be under 5MB");
+      return;
+    }
+
     const preview = URL.createObjectURL(file);
     setImageSlots((prev) =>
       prev.map((img) =>
@@ -101,18 +111,34 @@ const EditProduct = () => {
   };
 
   const addNewImage = (file) => {
-    if (!file) return;
-    setNewImages((prev) => [...prev, file]);
+    if (!file || file.size > MAX_SIZE) {
+      toast.error("Image must be under 5MB");
+      return;
+    }
+
+    if (totalImages >= MAX_IMAGES) {
+      toast.error("Maximum 5 images allowed");
+      return;
+    }
+
+    setNewImages((prev) => [
+      ...prev,
+      {
+        file,
+        preview: URL.createObjectURL(file),
+        name: file.name,
+      },
+    ]);
+  };
+
+  const removeNewImage = (index) => {
+    setNewImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   async function handleSubmit(e) {
     e.preventDefault();
 
-    const remaining =
-      imageSlots.filter((img) => !img.isDeleted || img.replacementFile).length +
-      newImages.length;
-
-    if (remaining === 0) {
+    if (totalImages === 0) {
       toast.error("At least one image is required");
       return;
     }
@@ -140,16 +166,14 @@ const EditProduct = () => {
       }
     });
 
-    newImages.forEach((file) => {
-      formdata.append("images", file);
+    newImages.forEach((img) => {
+      formdata.append("images", img.file);
     });
 
     try {
       const response = await apiFetch(`/api/updateproduct/${id}`, {
         method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
         body: formdata,
       });
 
@@ -168,16 +192,12 @@ const EditProduct = () => {
     }
   }
 
-  const totalImages =
-    imageSlots.filter((img) => !img.isDeleted || img.replacementFile).length +
-    newImages.length;
-
   return (
     <div className="h-[calc(100vh-4rem)] flex overflow-hidden bg-gray-50">
       <div className="flex flex-col lg:flex-row w-full mt-9 md:mt-1">
         <Slidebar />
 
-        <div className="flex-1 overflow-y-auto scrollbar-hide pt-7 md:pt-6 p-6">
+        <div className="flex-1 overflow-y-auto scrollbar-hide pt-7 md:pt-6 p-4 md:p-6">
           <h1 className="text-lg md:text-4xl mb-6 font-bold font-mono">
             Edit Product
           </h1>
@@ -185,7 +205,7 @@ const EditProduct = () => {
           <form
             onSubmit={handleSubmit}
             encType="multipart/form-data"
-            className="bg-white rounded shadow p-6 space-y-6 max-w-full"
+            className="bg-white rounded shadow p-4 md:p-6 space-y-6 w-full md:max-w-full"
           >
             <div>
               <label className="block mb-1 font-semibold">Title</label>
@@ -220,58 +240,31 @@ const EditProduct = () => {
             </div>
 
             <div>
-              <label className="block mb-1 font-semibold">Category</label>
-              <select
-                name="category"
-                value={product.category}
-                onChange={handleChange}
-                className="w-full border rounded px-3 py-2"
-              >
-                <option value="Fashion">Fashion</option>
-                <option value="Electronics">Electronics</option>
-                <option value="Mobile">Mobile</option>
-                <option value="Footwear">Footwear</option>
-                <option value="Furniture">Furniture</option>
-                <option value="Books">Books</option>
-                <option value="Grocery">Grocery</option>
-                <option value="Camera">Camera</option>
-              </select>
-            </div>
+              <label className="block mb-1 font-semibold">Images</label>
+              <p className="text-xs text-gray-500 mb-2">
+                Max 5 images allowed · Image size &lt; 5MB
+              </p>
 
-            <div>
-              <label className="block mb-1 font-semibold">Stock</label>
-              <select
-                name="stock"
-                value={product.stock}
-                onChange={handleChange}
-                className="w-full border rounded px-3 py-2"
-              >
-                <option value="Out-Of-Stock">Out-Of-Stock</option>
-                <option value="In-Stock">In-Stock</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block mb-3 font-semibold">Images</label>
-
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
                 {imageSlots.map((img) => (
                   <div
-                    key={img.index}
-                    className={`border p-3 rounded relative ${
+                    key={`existing-${img.index}`}
+                    className={`relative rounded border p-1 ${
                       img.isDeleted ? "opacity-40" : ""
                     }`}
                   >
-                    <img
-                      src={img.replacementPreview || img.url}
-                      className="h-32 w-full object-contain"
-                    />
+                    <div className="aspect-square w-full overflow-hidden rounded">
+                      <img
+                        src={img.replacementPreview || img.url}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
 
                     {!img.isDeleted ? (
                       <button
                         type="button"
                         onClick={() => markDelete(img.index)}
-                        className="absolute top-1 right-1 text-red-600"
+                        className="absolute top-1 right-1 text-xs bg-white rounded-full px-1 text-red-600"
                       >
                         ✕
                       </button>
@@ -279,9 +272,9 @@ const EditProduct = () => {
                       <button
                         type="button"
                         onClick={() => undoDelete(img.index)}
-                        className="absolute top-1 right-1 text-green-600"
+                        className="absolute top-1 right-1 text-xs bg-white rounded-full px-1 text-green-600"
                       >
-                        Undo
+                        ↺
                       </button>
                     )}
 
@@ -291,14 +284,35 @@ const EditProduct = () => {
                       onChange={(e) =>
                         replaceImage(img.index, e.target.files[0])
                       }
-                      className="mt-2 text-sm"
+                      className="mt-1 w-full text-[10px]"
                     />
                   </div>
                 ))}
 
+                {newImages.map((img, index) => (
+                  <div
+                    key={`new-${index}`}
+                    className="relative rounded border p-1"
+                  >
+                    <div className="aspect-square w-full overflow-hidden rounded">
+                      <img
+                        src={img.preview}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeNewImage(index)}
+                      className="absolute top-1 right-1 text-xs bg-white rounded-full px-1 text-red-600"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+
                 {totalImages < MAX_IMAGES && (
-                  <label className="border-dashed border-2 flex items-center justify-center cursor-pointer rounded h-32">
-                    <span className="text-sm text-gray-500">Add Image</span>
+                  <label className="flex items-center justify-center aspect-square border-dashed border rounded cursor-pointer text-xs text-gray-500">
+                    + Add
                     <input
                       type="file"
                       accept="image/*"
@@ -315,7 +329,7 @@ const EditProduct = () => {
               disabled={isSaving}
               className={`w-full font-semibold py-3 rounded text-white ${
                 isSaving
-                  ? "bg-purple-300 cursor-not-allowed"
+                  ? "bg-gray-400 cursor-not-allowed"
                   : "bg-purple-600 hover:bg-purple-700"
               }`}
             >
