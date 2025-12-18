@@ -30,7 +30,6 @@ import { fetchwishlist, mergeGuestWishlist } from "./features/wishlistSlice";
 const App = () => {
   const guestCart = useSelector((state) => state.cartItem.cart);
   const guestWishlist = useSelector((state) => state.wishlistItem.wishlist);
-  const userid = localStorage.getItem("user")
   const dispatch = useDispatch();
   const [token, setToken] = useState(null);
 
@@ -48,36 +47,50 @@ const App = () => {
 
 
 
-      try {
-         if (guestCart.length > 0 && token) {
-             dispatch(
-              mergeGuestCart({
-                userid,
-                guestCart: guestCart.map((item) => ({
-                  productId: item._id,
-                  quantity: item.quantity,
-                })),
-              })
-            ).unwrap();
-          }
-           dispatch(fetchCart(userid)).unwrap();
-        } catch (error) {
-          console.error("Something went wrong", error);
-        }
+     useEffect(() => {
+       if (!token) return;
 
-        try {
-          if (guestWishlist.length > 0 && token) {
-             dispatch(
-              mergeGuestWishlist({
-                userid,
-                guestWishlist: guestWishlist.map((item) => item._id),
-              })
-            ).unwrap();
-          }
-           dispatch(fetchwishlist(userid)).unwrap();
-        } catch (error) {
-          console.error("Something went wrong", error);
-        }
+       const userid = localStorage.getItem("user");
+       if (!userid) return;
+
+       const hydrate = async () => {
+         try {
+           if (guestCart.length > 0) {
+             await dispatch(
+               mergeGuestCart({
+                 userid,
+                 guestCart: guestCart.map((item) => ({
+                   productId: item._id,
+                   quantity: item.quantity,
+                 })),
+               })
+             ).unwrap();
+           }
+
+           await dispatch(fetchCart(userid)).unwrap();
+         } catch (error) {
+           console.error("Cart hydration failed", error);
+         }
+
+         try {
+           if (guestWishlist.length > 0) {
+             await dispatch(
+               mergeGuestWishlist({
+                 userid,
+                 guestWishlist: guestWishlist.map((item) => item._id),
+               })
+             ).unwrap();
+           }
+
+           await dispatch(fetchwishlist(userid)).unwrap();
+         } catch (error) {
+           console.error("Wishlist hydration failed", error);
+         }
+       };
+
+       hydrate();
+     }, [token]);
+
 
 
 
