@@ -14,11 +14,8 @@ const EditProduct = () => {
     images: [],
   });
 
-  const [existingImages, setExistingImages] = useState([]);
-  const [deleteIndexes, setDeleteIndexes] = useState([]);
-  const [replaceMap, setReplaceMap] = useState({});
+  const [imageSlots, setImageSlots] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
-
 
   const navigate = useNavigate();
   const { id } = useParams();
@@ -26,7 +23,15 @@ const EditProduct = () => {
 
   useEffect(() => {
     if (product?.images?.length) {
-      setExistingImages(product.images.map((url, index) => ({ url, index })));
+      setImageSlots(
+        product.images.map((url, index) => ({
+          index,
+          url,
+          isDeleted: false,
+          replacementFile: null,
+          replacementPreview: null,
+        }))
+      );
     }
   }, [product]);
 
@@ -40,7 +45,7 @@ const EditProduct = () => {
       });
       const result = await response.json();
       setProduct(result);
-    } catch (error) {
+    } catch {
       toast.error("Failed to load product");
     }
   }
@@ -53,31 +58,53 @@ const EditProduct = () => {
     setProduct({ ...product, [e.target.name]: e.target.value });
   }
 
-  const handleDeleteImage = (index) => {
-    setDeleteIndexes((prev) =>
-      prev.includes(index) ? prev : [...prev, index]
+  const markDelete = (index) => {
+    setImageSlots((prev) =>
+      prev.map((img) =>
+        img.index === index
+          ? {
+              ...img,
+              isDeleted: true,
+              replacementFile: null,
+              replacementPreview: null,
+            }
+          : img
+      )
     );
-
-    setExistingImages((prev) => prev.filter((img) => img.index !== index));
-
-    setReplaceMap((prev) => {
-      const copy = { ...prev };
-      delete copy[index];
-      return copy;
-    });
   };
 
-  const handleReplaceImage = (index, file) => {
-    setReplaceMap((prev) => ({
-      ...prev,
-      [index]: file,
-    }));
+  const undoDelete = (index) => {
+    setImageSlots((prev) =>
+      prev.map((img) =>
+        img.index === index ? { ...img, isDeleted: false } : img
+      )
+    );
+  };
+
+  const replaceImage = (index, file) => {
+    const preview = URL.createObjectURL(file);
+    setImageSlots((prev) =>
+      prev.map((img) =>
+        img.index === index
+          ? {
+              ...img,
+              replacementFile: file,
+              replacementPreview: preview,
+              isDeleted: false,
+            }
+          : img
+      )
+    );
   };
 
   async function handleSubmit(e) {
     e.preventDefault();
 
-    if (existingImages.length === 0) {
+    const remaining = imageSlots.filter(
+      (img) => !img.isDeleted || img.replacementFile
+    );
+
+    if (remaining.length === 0) {
       toast.error("At least one image is required");
       return;
     }
@@ -92,13 +119,17 @@ const EditProduct = () => {
     formdata.append("category", product.category);
     formdata.append("stock", product.stock);
 
-    deleteIndexes.forEach((i) => {
-      formdata.append("deleteIndexes", i);
+    imageSlots.forEach((img) => {
+      if (img.isDeleted && !img.replacementFile) {
+        formdata.append("deleteIndexes", img.index);
+      }
     });
 
-    Object.entries(replaceMap).forEach(([index, file]) => {
-      formdata.append("replaceIndexes", index);
-      formdata.append("images", file);
+    imageSlots.forEach((img) => {
+      if (img.replacementFile) {
+        formdata.append("replaceIndexes", img.index);
+        formdata.append("images", img.replacementFile);
+      }
     });
 
     try {
@@ -118,22 +149,21 @@ const EditProduct = () => {
       } else {
         toast.error(result.message);
       }
-    } catch (error) {
+    } catch {
       toast.error("Update failed");
     } finally {
       setIsSaving(false);
     }
   }
 
-
   return (
     <div className="h-[calc(100vh-4rem)] flex overflow-hidden bg-gray-50">
       <div className="flex flex-col lg:flex-row w-full mt-9 md:mt-1">
         <Slidebar />
 
-        <div className="flex-1 overflow-y-auto scrollbar-hide pt-7 md:pt-6 p-6">
-          <h1 className="text-lg md:text-4xl mb-4 md:mb-8 font-bold font-mono">
-            Edit Products
+        <div className="flex-1 overflow-y-auto pt-7 md:pt-6 p-6">
+          <h1 className="text-lg md:text-4xl mb-6 font-bold font-mono">
+            Edit Product
           </h1>
 
           <form
@@ -141,78 +171,115 @@ const EditProduct = () => {
             encType="multipart/form-data"
             className="max-w-screen mx-auto p-6 bg-white rounded shadow space-y-6"
           >
-            <input
-              type="text"
-              name="title"
-              value={product.title}
-              onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
-            />
+            <div>
+              <label className="block mb-1 font-semibold">Title</label>
+              <input
+                type="text"
+                name="title"
+                value={product.title}
+                onChange={handleChange}
+                className="w-full border rounded px-3 py-2"
+              />
+            </div>
 
-            <input
-              type="number"
-              name="price"
-              value={product.price}
-              onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
-            />
+            <div>
+              <label className="block mb-1 font-semibold">Price</label>
+              <input
+                type="number"
+                name="price"
+                value={product.price}
+                onChange={handleChange}
+                className="w-full border rounded px-3 py-2"
+              />
+            </div>
 
-            <textarea
-              name="description"
-              value={product.description}
-              onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
-            />
+            <div>
+              <label className="block mb-1 font-semibold">Description</label>
+              <textarea
+                name="description"
+                value={product.description}
+                onChange={handleChange}
+                className="w-full border rounded px-3 py-2"
+              />
+            </div>
 
-            <select
-              name="category"
-              value={product.category}
-              onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
-            >
-              <option value="Fashion">Fashion</option>
-              <option value="Electronics">Electronics</option>
-              <option value="Mobile">Mobile</option>
-              <option value="Footwear">Footwear</option>
-              <option value="Furniture">Furniture</option>
-              <option value="Books">Books</option>
-              <option value="Grocery">Grocery</option>
-              <option value="Camera">Camera</option>
-            </select>
+            <div>
+              <label className="block mb-1 font-semibold">Category</label>
+              <select
+                name="category"
+                value={product.category}
+                onChange={handleChange}
+                className="w-full border rounded px-3 py-2"
+              >
+                <option value="Fashion">Fashion</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Mobile">Mobile</option>
+                <option value="Footwear">Footwear</option>
+                <option value="Furniture">Furniture</option>
+                <option value="Books">Books</option>
+                <option value="Grocery">Grocery</option>
+                <option value="Camera">Camera</option>
+              </select>
+            </div>
 
-            <select
-              name="stock"
-              value={product.stock}
-              onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
-            >
-              <option value="Out-Of-Stock">Out-Of-Stock</option>
-              <option value="In-Stock">In-Stock</option>
-            </select>
+            <div>
+              <label className="block mb-1 font-semibold">Stock</label>
+              <select
+                name="stock"
+                value={product.stock}
+                onChange={handleChange}
+                className="w-full border rounded px-3 py-2"
+              >
+                <option value="Out-Of-Stock">Out-Of-Stock</option>
+                <option value="In-Stock">In-Stock</option>
+              </select>
+            </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {existingImages.map(({ url, index }) => (
-                <div key={index} className="border p-2 relative">
-                  <img src={url} className="h-32 w-full object-contain" />
+            <div>
+              <label className="block mb-3 font-semibold">Images</label>
 
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteImage(index)}
-                    className="absolute top-1 right-1 text-red-600"
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {imageSlots.map((img) => (
+                  <div
+                    key={img.index}
+                    className={`border p-3 rounded relative ${
+                      img.isDeleted ? "opacity-40" : ""
+                    }`}
                   >
-                    ✕
-                  </button>
+                    <img
+                      src={img.replacementPreview || img.url}
+                      className="h-32 w-full object-contain"
+                    />
 
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) =>
-                      handleReplaceImage(index, e.target.files[0])
-                    }
-                    className="mt-2 text-sm"
-                  />
-                </div>
-              ))}
+                    {!img.isDeleted ? (
+                      <button
+                        type="button"
+                        onClick={() => markDelete(img.index)}
+                        className="absolute top-1 right-1 text-red-600"
+                      >
+                        ✕
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => undoDelete(img.index)}
+                        className="absolute top-1 right-1 text-green-600"
+                      >
+                        Undo
+                      </button>
+                    )}
+
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) =>
+                        replaceImage(img.index, e.target.files[0])
+                      }
+                      className="mt-2 text-sm"
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
 
             <button
@@ -220,7 +287,7 @@ const EditProduct = () => {
               disabled={isSaving}
               className={`w-full font-semibold py-3 rounded text-white ${
                 isSaving
-                  ? "bg-purple-300 cursor-not-allowed"
+                  ? "bg-gray-400 cursor-not-allowed"
                   : "bg-purple-600 hover:bg-purple-700"
               }`}
             >
