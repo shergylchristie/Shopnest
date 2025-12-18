@@ -143,14 +143,10 @@ const editProductController = async (req, res) => {
         : [Number(req.body.replaceIndexes)]
       : [];
 
-    const files = req.files || [];
-
     const product = await ProductCollection.findById(id);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
-
-    /* ================= TEXT FIELDS ================= */
 
     if (title) product.title = title;
     if (price) product.price = price;
@@ -158,44 +154,43 @@ const editProductController = async (req, res) => {
     if (category) product.category = category;
     if (stock) product.stock = stock;
 
-    /* ================= IMAGE DELETE ================= */
+    let images = [...product.images];
+    let imagePublicIds = [...product.imagesPublicIds];
 
-    // Sort descending so indexes don't shift
     deleteIndexes.sort((a, b) => b - a);
-
     for (const index of deleteIndexes) {
-      if (product.images[index]) {
-        await cloudinary.api.delete_resources([product.imagesPublicIds[index]]);
-
-        product.images.splice(index, 1);
-        product.imagesPublicIds.splice(index, 1);
+      if (images[index]) {
+        await cloudinary.api.delete_resources([imagePublicIds[index]]);
+        images.splice(index, 1);
+        imagePublicIds.splice(index, 1);
       }
     }
 
-    /* ================= IMAGE REPLACE ================= */
-
     replaceIndexes.forEach((index, i) => {
-      if (!product.images[index]) return;
+      if (!images[index] || !req.files[i]) return;
 
-      // Delete old image
-      cloudinary.api.delete_resources([product.imagesPublicIds[index]]);
+      cloudinary.api.delete_resources([imagePublicIds[index]]);
 
-      // Replace with new image
-      product.images[index] = files[i].path;
-      product.imagesPublicIds[index] = files[i].filename;
+      images[index] = req.files[i].path;
+      imagePublicIds[index] = req.files[i].filename;
     });
 
-    /* ================= FINAL VALIDATION ================= */
+    const newFiles = req.files.filter((_, i) => !replaceIndexes.includes(i));
+    newFiles.forEach((file) => {
+      images.push(file.path);
+      imagePublicIds.push(file.filename);
+    });
 
-    if (product.images.length === 0) {
+    if (images.length === 0) {
       return res
         .status(400)
         .json({ message: "At least one image is required." });
     }
 
-    // Primary image always index 0
-    product.image = product.images[0];
-    product.imagePublicId = product.imagesPublicIds[0];
+    product.images = images;
+    product.imagesPublicIds = imagePublicIds;
+    product.image = images[0];
+    product.imagePublicId = imagePublicIds[0];
 
     await product.save();
 
@@ -208,6 +203,7 @@ const editProductController = async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 
 
 const getReplyData = async (req, res) => {
