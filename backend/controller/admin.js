@@ -35,35 +35,42 @@ const deleteQueryController = async (req, res) => {
 const addProductController = async (req, res) => {
   try {
     const { title, price, description, category } = req.body;
-    const files = req.files;
+    const files = req.files || [];
 
     if (!title || !price || !description || !category) {
       return res.status(400).json({ message: "Please fill all the fields." });
     }
 
-    if (!files.length) {
+    if (files.length === 0) {
       return res
         .status(400)
         .json({ message: "Please upload at least one image." });
     }
 
-    const images = files.map((file) => file.filename);
+    
+    const images = files.map((file) => file.path);
 
     const record = new ProductCollection({
-      title: title,
-      price: price,
-      description: description,
-      category: category,
-      image: images[0],
-      images: images,
+      title,
+      price,
+      description,
+      category,
+      image: images[0], // primary image
+      images, // all images
     });
 
     await record.save();
-    return res.status(200).json({ message: "Product Added Successfully" });
+
+    return res.status(201).json({
+      message: "Product Added Successfully",
+      product: record,
+    });
   } catch (error) {
+    console.error("ADD PRODUCT ERROR:", error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 
 const getProductController = async (req, res) => {
   const id = req.params.id;
