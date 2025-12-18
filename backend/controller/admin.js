@@ -76,7 +76,6 @@ const addProductController = async (req, res) => {
 };
 
 const getProductController = async (req, res) => {
-  console.log("manage called")
   const id = req.params.id;
   try {
     if (id) {
