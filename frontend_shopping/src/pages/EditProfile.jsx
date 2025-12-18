@@ -51,7 +51,6 @@ const indianStates = [
   "Puducherry",
 ];
 
-const addressLabels = ["Home", "Work", "Other"];
 
 const EditProfileSkeleton = () => (
   <div className="bg-slate-50 flex items-center justify-center px-4 py-2 md:py-5">
@@ -420,7 +419,15 @@ const EditProfilePage = () => {
         }),
       });
       const result = await res.json();
-      if (res.ok) toast.success(result.message);
+      if (res.ok) 
+       {toast.success(result.message);
+        setPassword({
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
+       }
+
       else toast.error(result.message);
     } catch {
       toast.error("Something went wrong");
@@ -832,7 +839,7 @@ const EditProfilePage = () => {
                   your account is deleted.
                 </p>
                 <button className="w-full rounded-xl border border-rose-300 bg-white px-4 py-2 text-xs sm:text-sm font-medium text-rose-700 hover:bg-rose-50">
-                  Deactivate account
+                  Delete account
                 </button>
               </div>
             </section>

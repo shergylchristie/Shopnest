@@ -22,29 +22,71 @@ import ProfilePage from "./pages/Profile";
 import EditProfilePage from "./pages/EditProfile";
 import AdminRoute from "./routes/AdminRoute"
 import OrderSuccess from "./components/OrderSuccess";
-import AuthFetch from "./components/AuthFetch";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCart, mergeGuestCart } from "../features/cartSlice";
+import { fetchwishlist, mergeGuestWishlist } from "../features/wishlistSlice";
+
 
 const App = () => {
-  const [token, setToken] = useState(() => localStorage.getItem("token"));
+  const guestCart = useSelector((state) => state.cartItem.cart);
+  const guestWishlist = useSelector((state) => state.wishlistItem.wishlist);
+  const userid = localStorage.getItem("user")
+  const dispatch = useDispatch();
+  const [token, setToken] = useState(null);
 
   useEffect(() => {
-    if (token) {
-      localStorage.setItem("token", token);
-    } else {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      localStorage.removeItem("role")
-    }
-  }, [token]);
+    setToken(localStorage.getItem("token"));
+  }, []);
+
+  useEffect(() => {
+    const handler = () => {
+      setToken(localStorage.getItem("token"));
+    };
+    window.addEventListener("storage", handler);
+    return () => window.removeEventListener("storage", handler);
+  }, []);
+
+
+
+      try {
+         if (guestCart.length > 0 && token) {
+             dispatch(
+              mergeGuestCart({
+                userid,
+                guestCart: guestCart.map((item) => ({
+                  productId: item._id,
+                  quantity: item.quantity,
+                })),
+              })
+            ).unwrap();
+          }
+           dispatch(fetchCart(userid)).unwrap();
+        } catch (error) {
+          console.error("Something went wrong", error);
+        }
+
+        try {
+          if (guestWishlist.length > 0 && token) {
+             dispatch(
+              mergeGuestWishlist({
+                userid,
+                guestWishlist: guestWishlist.map((item) => item._id),
+              })
+            ).unwrap();
+          }
+           dispatch(fetchwishlist(userid)).unwrap();
+        } catch (error) {
+          console.error("Something went wrong", error);
+        }
+
+
 
   const [activeCategory, setActiveCategory] = useState("All");
   return (
     <BrowserRouter>
       <ScrollToTop />
-      <AuthFetch />
       <Navbar
         token={token}
-        setToken={setToken}
         setActiveCategory={setActiveCategory}
       />
       <div className="min-h-screen pt-16 bg-gray-50">

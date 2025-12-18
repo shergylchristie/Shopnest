@@ -2,19 +2,17 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { FaTimes, FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { fetchCart, mergeGuestCart } from "../features/cartSlice";
-import { fetchwishlist, mergeGuestWishlist } from "../features/wishlistSlice";
-import { useDispatch, useSelector } from "react-redux";
+
+
 import { apiFetch } from "../apiClient";
 
 
-const Login = ({ setToken }) => {
+const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [login, setLogin] = useState({ email: "", password: "" });
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const guestCart = useSelector((state) => state.cartItem.cart);
-  const guestWishlist = useSelector((state) => state.wishlistItem.wishlist);
+  
+  
 
   const togglePassword = () => {
     setShowPassword((password) => !password);
@@ -45,40 +43,7 @@ const Login = ({ setToken }) => {
         toast.success(result.message);
         localStorage.setItem("token", result.token);
         localStorage.setItem("user", result.id);
-        const userid = result.id;
         localStorage.setItem("role", result.role);
-        setToken(result.token);
-        try {
-          if (guestCart.length > 0) {
-            await dispatch(
-              mergeGuestCart({
-                userid,
-                guestCart: guestCart.map((item) => ({
-                  productId: item._id,
-                  quantity: item.quantity,
-                })),
-              })
-            ).unwrap();
-          }
-          await dispatch(fetchCart(userid)).unwrap();
-        } catch (error) {
-          console.error("Something went wrong", error);
-        }
-
-        try {
-          if (guestWishlist.length > 0) {
-            await dispatch(
-              mergeGuestWishlist({
-                userid,
-                guestWishlist: guestWishlist.map((item) => item._id),
-              })
-            ).unwrap();
-          }
-          await dispatch(fetchwishlist(userid)).unwrap();
-        } catch (error) {
-          console.error("Something went wrong", error);
-        }
-
         navigate("/");
       } else {
         toast.error(result.message);

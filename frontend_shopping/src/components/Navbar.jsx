@@ -17,7 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { appLogout } from "../features/appActions";
 import { apiFetch } from "../apiClient";
 
-export default function Navbar({ token, setToken, setActiveCategory }) {
+export default function Navbar({ token, setActiveCategory }) {
   const [navOpen, setNavOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [search, setSearch] = useState(false);
@@ -40,7 +40,6 @@ export default function Navbar({ token, setToken, setActiveCategory }) {
   const role = localStorage.getItem("role");
 
   const handleLogout = () => {
-    setToken(null);
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     localStorage.removeItem("role");

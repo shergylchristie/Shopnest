@@ -256,7 +256,7 @@ const EditProduct = () => {
                     <div className="aspect-square w-full overflow-hidden rounded">
                       <img
                         src={img.replacementPreview || img.url}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain"
                       />
                     </div>
 
@@ -329,7 +329,7 @@ const EditProduct = () => {
               disabled={isSaving}
               className={`w-full font-semibold py-3 rounded text-white ${
                 isSaving
-                  ? "bg-gray-400 cursor-not-allowed"
+                  ? "bg-purple-300 cursor-not-allowed"
                   : "bg-purple-600 hover:bg-purple-700"
               }`}
             >

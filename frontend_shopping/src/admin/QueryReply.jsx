@@ -38,7 +38,7 @@ const QueryReply = () => {
 
   async function handleForm(e) {
     e.preventDefault();
-    if (!emailData.reply || !emailReply.sub)
+    if (!emailData.reply || !emailData.sub)
       return toast.error("Please fill all the fields");
 
     const emaildata = emailData;
