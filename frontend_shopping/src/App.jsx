@@ -23,8 +23,8 @@ import EditProfilePage from "./pages/EditProfile";
 import AdminRoute from "./routes/AdminRoute"
 import OrderSuccess from "./components/OrderSuccess";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCart, mergeGuestCart } from "../features/cartSlice";
-import { fetchwishlist, mergeGuestWishlist } from "../features/wishlistSlice";
+import { fetchCart, mergeGuestCart } from "./features/cartSlice";
+import { fetchwishlist, mergeGuestWishlist } from "./features/wishlistSlice";
 
 
 const App = () => {
