@@ -4,6 +4,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { apiFetch } from "../apiClient";
 
+const MAX_IMAGES = 5;
+
 const EditProduct = () => {
   const [product, setProduct] = useState({
     title: "",
@@ -15,6 +17,7 @@ const EditProduct = () => {
   });
 
   const [imageSlots, setImageSlots] = useState([]);
+  const [newImages, setNewImages] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
 
   const navigate = useNavigate();
@@ -97,14 +100,19 @@ const EditProduct = () => {
     );
   };
 
+  const addNewImage = (file) => {
+    if (!file) return;
+    setNewImages((prev) => [...prev, file]);
+  };
+
   async function handleSubmit(e) {
     e.preventDefault();
 
-    const remaining = imageSlots.filter(
-      (img) => !img.isDeleted || img.replacementFile
-    );
+    const remaining =
+      imageSlots.filter((img) => !img.isDeleted || img.replacementFile).length +
+      newImages.length;
 
-    if (remaining.length === 0) {
+    if (remaining === 0) {
       toast.error("At least one image is required");
       return;
     }
@@ -132,6 +140,10 @@ const EditProduct = () => {
       }
     });
 
+    newImages.forEach((file) => {
+      formdata.append("images", file);
+    });
+
     try {
       const response = await apiFetch(`/api/updateproduct/${id}`, {
         method: "PUT",
@@ -156,12 +168,16 @@ const EditProduct = () => {
     }
   }
 
+  const totalImages =
+    imageSlots.filter((img) => !img.isDeleted || img.replacementFile).length +
+    newImages.length;
+
   return (
     <div className="h-[calc(100vh-4rem)] flex overflow-hidden bg-gray-50">
       <div className="flex flex-col lg:flex-row w-full mt-9 md:mt-1">
         <Slidebar />
 
-        <div className="flex-1 overflow-y-auto pt-7 md:pt-6 p-6">
+        <div className="flex-1 overflow-y-auto scrollbar-hide pt-7 md:pt-6 p-6">
           <h1 className="text-lg md:text-4xl mb-6 font-bold font-mono">
             Edit Product
           </h1>
@@ -169,7 +185,7 @@ const EditProduct = () => {
           <form
             onSubmit={handleSubmit}
             encType="multipart/form-data"
-            className="max-w-screen mx-auto p-6 bg-white rounded shadow space-y-6"
+            className="bg-white rounded shadow p-6 space-y-6 max-w-4xl"
           >
             <div>
               <label className="block mb-1 font-semibold">Title</label>
@@ -279,6 +295,18 @@ const EditProduct = () => {
                     />
                   </div>
                 ))}
+
+                {totalImages < MAX_IMAGES && (
+                  <label className="border-dashed border-2 flex items-center justify-center cursor-pointer rounded h-32">
+                    <span className="text-sm text-gray-500">Add Image</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      hidden
+                      onChange={(e) => addNewImage(e.target.files[0])}
+                    />
+                  </label>
+                )}
               </div>
             </div>
 
@@ -287,7 +315,7 @@ const EditProduct = () => {
               disabled={isSaving}
               className={`w-full font-semibold py-3 rounded text-white ${
                 isSaving
-                  ? "bg-gray-400 cursor-not-allowed"
+                  ? "bg-purple-300 cursor-not-allowed"
                   : "bg-purple-600 hover:bg-purple-700"
               }`}
             >
