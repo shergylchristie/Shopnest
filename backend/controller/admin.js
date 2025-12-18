@@ -130,6 +130,19 @@ const editProductController = async (req, res) => {
   try {
     const { id } = req.params;
     const { title, price, description, category, stock } = req.body;
+
+    const deleteIndexes = req.body.deleteIndexes
+      ? Array.isArray(req.body.deleteIndexes)
+        ? req.body.deleteIndexes.map(Number)
+        : [Number(req.body.deleteIndexes)]
+      : [];
+
+    const replaceIndexes = req.body.replaceIndexes
+      ? Array.isArray(req.body.replaceIndexes)
+        ? req.body.replaceIndexes.map(Number)
+        : [Number(req.body.replaceIndexes)]
+      : [];
+
     const files = req.files || [];
 
     const product = await ProductCollection.findById(id);
@@ -137,26 +150,52 @@ const editProductController = async (req, res) => {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    if (title !== undefined && title !== "") product.title = title;
-    if (price !== undefined && price !== "") product.price = price;
-    if (description !== undefined && description !== "")
-      product.description = description;
-    if (category !== undefined && category !== "") product.category = category;
-    if (stock !== undefined && stock !== "") product.stock = stock;
+    /* ================= TEXT FIELDS ================= */
 
-    if (files.length > 0) {
-      const newImages = files.map((file) => file.path);
+    if (title) product.title = title;
+    if (price) product.price = price;
+    if (description) product.description = description;
+    if (category) product.category = category;
+    if (stock) product.stock = stock;
 
-      product.images = [...(product.images || []), ...newImages];
+    /* ================= IMAGE DELETE ================= */
 
-      if (!product.image) {
-        product.image = newImages[0];
+    // Sort descending so indexes don't shift
+    deleteIndexes.sort((a, b) => b - a);
+
+    for (const index of deleteIndexes) {
+      if (product.images[index]) {
+        await cloudinary.api.delete_resources([product.imagesPublicIds[index]]);
+
+        product.images.splice(index, 1);
+        product.imagesPublicIds.splice(index, 1);
       }
     }
 
-    if (!product.image || product.image.trim() === "") {
-      product.image = product.images?.[0] || "";
+    /* ================= IMAGE REPLACE ================= */
+
+    replaceIndexes.forEach((index, i) => {
+      if (!product.images[index]) return;
+
+      // Delete old image
+      cloudinary.api.delete_resources([product.imagesPublicIds[index]]);
+
+      // Replace with new image
+      product.images[index] = files[i].path;
+      product.imagesPublicIds[index] = files[i].filename;
+    });
+
+    /* ================= FINAL VALIDATION ================= */
+
+    if (product.images.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "At least one image is required." });
     }
+
+    // Primary image always index 0
+    product.image = product.images[0];
+    product.imagePublicId = product.imagesPublicIds[0];
 
     await product.save();
 
@@ -169,6 +208,7 @@ const editProductController = async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 
 const getReplyData = async (req, res) => {
   try {
