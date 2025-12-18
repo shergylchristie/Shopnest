@@ -9,7 +9,7 @@ import {
   saveCart,
   deleteCartItemThunk,
 } from "../features/cartSlice";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { CircularProgress } from "@mui/material";
 
 const CartPage = () => {

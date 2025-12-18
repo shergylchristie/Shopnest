@@ -3,10 +3,12 @@ import Slidebar from "../admin/Slidebar";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { MdDelete, MdEdit } from "react-icons/md";
+import { apiFetch } from "../apiClient";
 
 const ManageProducts = () => {
   const [products, setProduct] = useState([]);
   const token = localStorage.getItem("token");
+  console.log(token);
 
   async function handleGetProducts() {
     const response = await apiFetch("/api/getproducts", {
@@ -15,6 +17,7 @@ const ManageProducts = () => {
         Authorization: `Bearer ${token}`,
       },
     });
+    console.log(result);
     const result = await response.json();
     setProduct(result);
   }
