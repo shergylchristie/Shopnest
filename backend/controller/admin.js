@@ -2,6 +2,8 @@ const QueryCollection = require("../models/query");
 const ProductCollection = require("../models/product");
 const path = require("path");
 const nodemailer = require("nodemailer");
+const cloudinary = require("cloudinary").v2;
+cloudinary.config();
 
 
 const showQueryController = async (req, res) => {
