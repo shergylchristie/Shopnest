@@ -20,18 +20,19 @@ import ProductDetails from "./components/ProductDetails";
 import CheckoutPage from "./pages/Checkout";
 import ProfilePage from "./pages/Profile";
 import EditProfilePage from "./pages/EditProfile";
-import AdminRoute from "./routes/AdminRoute"
+import AdminRoute from "./routes/AdminRoute";
 import OrderSuccess from "./components/OrderSuccess";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCart, mergeGuestCart } from "./features/cartSlice";
 import { fetchwishlist, mergeGuestWishlist } from "./features/wishlistSlice";
-
 
 const App = () => {
   const guestCart = useSelector((state) => state.cartItem.cart);
   const guestWishlist = useSelector((state) => state.wishlistItem.wishlist);
   const dispatch = useDispatch();
   const [token, setToken] = useState(null);
+  const cartSnapshotRef = useRef(null);
+  const wishlistSnapshotRef = useRef(null);
 
   useEffect(() => {
     setToken(localStorage.getItem("token"));
@@ -45,64 +46,70 @@ const App = () => {
     return () => window.removeEventListener("storage", handler);
   }, []);
 
+  useEffect(() => {
+    if (!token) return;
 
+    if (!cartSnapshotRef.current) {
+      cartSnapshotRef.current = [...guestCart];
+    }
 
-     useEffect(() => {
-       if (!token) return;
+    if (!wishlistSnapshotRef.current) {
+      wishlistSnapshotRef.current = [...guestWishlist];
+    }
+  }, [token]);
 
-       const userid = localStorage.getItem("user");
-       if (!userid) return;
+  useEffect(() => {
+    if (!token) return;
 
-       const hydrate = async () => {
-         try {
-           if (guestCart.length > 0) {
-             await dispatch(
-               mergeGuestCart({
-                 userid,
-                 guestCart: guestCart.map((item) => ({
-                   productId: item._id,
-                   quantity: item.quantity,
-                 })),
-               })
-             ).unwrap();
-           }
+    const userid = localStorage.getItem("user");
+    if (!userid) return;
 
-           await dispatch(fetchCart(userid)).unwrap();
-         } catch (error) {
-           console.error("Cart hydration failed", error);
-         }
+    const cartSnapshot = cartSnapshotRef.current;
+    const wishlistSnapshot = wishlistSnapshotRef.current;
 
-         try {
-           if (guestWishlist.length > 0) {
-             await dispatch(
-               mergeGuestWishlist({
-                 userid,
-                 guestWishlist: guestWishlist.map((item) => item._id),
-               })
-             ).unwrap();
-           }
+    if (!cartSnapshot && !wishlistSnapshot) return;
 
-           await dispatch(fetchwishlist(userid)).unwrap();
-         } catch (error) {
-           console.error("Wishlist hydration failed", error);
-         }
-       };
+    const hydrate = async () => {
+      try {
+        if (cartSnapshot?.length > 0) {
+          await dispatch(
+            mergeGuestCart({
+              userid,
+              guestCart: cartSnapshot.map((item) => ({
+                productId: item._id,
+                quantity: item.quantity,
+              })),
+            })
+          ).unwrap();
+        }
 
-       hydrate();
-     }, [token, guestCart.length, guestWishlist.length]);
+        if (wishlistSnapshot?.length > 0) {
+          await dispatch(
+            mergeGuestWishlist({
+              userid,
+              guestWishlist: wishlistSnapshot.map((item) => item._id),
+            })
+          ).unwrap();
+        }
 
+        await dispatch(fetchCart(userid)).unwrap();
+        await dispatch(fetchwishlist(userid)).unwrap();
 
+        cartSnapshotRef.current = null;
+        wishlistSnapshotRef.current = null;
+      } catch (error) {
+        console.error("Hydration failed", error);
+      }
+    };
 
-
+    hydrate();
+  }, [token]);
 
   const [activeCategory, setActiveCategory] = useState("All");
   return (
     <BrowserRouter>
       <ScrollToTop />
-      <Navbar
-        token={token}
-        setActiveCategory={setActiveCategory}
-      />
+      <Navbar token={token} setActiveCategory={setActiveCategory} />
       <div className="min-h-screen pt-16 bg-gray-50">
         <Routes>
           <Route
