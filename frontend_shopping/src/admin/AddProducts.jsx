@@ -49,7 +49,7 @@ const AddProducts = () => {
         navigate("/admin/manageProducts");
       } else toast.error(result.message);
     } catch (error) {
-      toast.error(error);
+      toast.error(error?.message || "Something went wrong");
     }
   }
 

@@ -4,12 +4,15 @@ import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { MdDelete, MdEdit } from "react-icons/md";
 import { apiFetch } from "../apiClient";
+import Skeleton from "@mui/material/Skeleton";
 
 const ManageProducts = () => {
   const [products, setProduct] = useState([]);
+  const [loading, setLoading] = useState(false);
   const token = localStorage.getItem("token");
 
   async function handleGetProducts() {
+    setLoading(true);
     const response = await apiFetch("/api/getproducts", {
       method: "GET",
       headers: {
@@ -18,6 +21,7 @@ const ManageProducts = () => {
     });
     const result = await response.json();
     setProduct(result);
+    setLoading(false);
   }
 
   async function handleDelete(id) {
@@ -58,7 +62,46 @@ const ManageProducts = () => {
           </Link>
         </div>
 
-        {products.length > 0 ? (
+        {loading ? (
+          <div className="grid gap-6 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            {Array.from(new Array(8)).map((_, index) => (
+              <div
+                key={index}
+                className="bg-slate-50 rounded-sm shadow-lg p-1 md:p-5 flex flex-col h-full"
+              >
+                <Skeleton
+                  variant="rectangular"
+                  className="w-full h-20 md:h-40 rounded-sm"
+                />
+                <div className="space-y-2 md:space-y-3 mt-2 flex-1">
+                  <Skeleton variant="text" width="80%" />
+                  <Skeleton variant="text" width="60%" />
+                  <Skeleton variant="text" width="40%" />
+                  <Skeleton
+                    variant="rectangular"
+                    width={60}
+                    height={24}
+                    style={{ borderRadius: "0.375rem" }}
+                  />
+                </div>
+                <div className="flex justify-between mt-3 md:mt-4">
+                  <Skeleton
+                    variant="rectangular"
+                    width={40}
+                    height={32}
+                    style={{ borderRadius: "0.375rem" }}
+                  />
+                  <Skeleton
+                    variant="rectangular"
+                    width={40}
+                    height={32}
+                    style={{ borderRadius: "0.375rem" }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : products.length > 0 ? (
           <div className="grid gap-6 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {products.map((value, index) => (
               <div
