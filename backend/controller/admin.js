@@ -127,20 +127,29 @@ const editProductController = async (req, res) => {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    if (title !== undefined) product.title = title;
-    if (price !== undefined) product.price = price;
-    if (description !== undefined) product.description = description;
-    if (category !== undefined) product.category = category;
-    if (stock !== undefined) product.stock = stock;
+    // Update fields ONLY if they are provided and not empty
+    if (title !== undefined && title !== "") product.title = title;
+    if (price !== undefined && price !== "") product.price = price;
+    if (description !== undefined && description !== "")
+      product.description = description;
+    if (category !== undefined && category !== "") product.category = category;
+    if (stock !== undefined && stock !== "") product.stock = stock;
 
+    // Handle new images
     if (files.length > 0) {
       const newImages = files.map((file) => file.path);
 
       product.images = [...(product.images || []), ...newImages];
 
+      // Only set primary image if it does not exist
       if (!product.image) {
         product.image = newImages[0];
       }
+    }
+
+    // 🔒 GUARANTEE image is never empty
+    if (!product.image || product.image.trim() === "") {
+      product.image = product.images?.[0] || "";
     }
 
     await product.save();
@@ -154,7 +163,6 @@ const editProductController = async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
-
 
 const getReplyData = async (req, res) => {
   try {
