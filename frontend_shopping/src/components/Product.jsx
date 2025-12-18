@@ -26,7 +26,12 @@ const ProductSkeletonGrid = () => {
     <div className="max-w-7xl mx-auto pb-10">
       <div>
         <h1 className="flex justify-center text-2xl sm:text-3xl md:text-4xl font-bold my-10">
-          Products
+          <Skeleton
+            variant="rectangular"
+            height={24}
+            width={40}
+            className="w-full rounded-md mb-3"
+          />
         </h1>
       </div>
 
