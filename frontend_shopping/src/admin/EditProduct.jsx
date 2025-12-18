@@ -185,7 +185,7 @@ const EditProduct = () => {
           <form
             onSubmit={handleSubmit}
             encType="multipart/form-data"
-            className="bg-white rounded shadow p-6 space-y-6 max-w-4xl"
+            className="bg-white rounded shadow p-6 space-y-6 max-w-full"
           >
             <div>
               <label className="block mb-1 font-semibold">Title</label>
