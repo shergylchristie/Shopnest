@@ -49,14 +49,17 @@ const addProductController = async (req, res) => {
 
     
     const images = files.map((file) => file.path);
+    const imagesPublicIds = files.map((file) => file.filename);
 
-    const record = new ProductCollection({
+    const product = new ProductCollection({
       title,
       price,
       description,
       category,
-      image: images[0], // primary image
-      images, // all images
+      image: images[0],
+      images,
+      imagePublicId: imagesPublicIds[0],
+      imagesPublicIds,
     });
 
     await record.save();
@@ -89,32 +92,38 @@ const getProductController = async (req, res) => {
 
 const deleteProductController = async (req, res) => {
   try {
-    const id = req.params.id;
-    const product = await ProductCollection.findById(id);
+    const { id } = req.params;
 
+    const product = await ProductCollection.findById(id);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    const filename = product.image;
+    const publicIds = [];
 
-    if (filename) {
-      const filePath = path.resolve(UPLOAD_DIR, filename);
-      if (filePath.startsWith(UPLOAD_DIR)) {
-        await fs.unlink(filePath).catch((err) => {
-          if (err.code !== "ENOENT") console.error(err);
-        });
-      }
+    if (product.imagePublicId) {
+      publicIds.push(product.imagePublicId);
     }
 
-    await ProductCollection.findByIdAndDelete(id);
+    if (product.imagesPublicIds?.length > 0) {
+      publicIds.push(...product.imagesPublicIds);
+    }
 
-    return res.status(200).json({ message: "Product Deleted Successfully" });
+    if (publicIds.length > 0) {
+      await cloudinary.api.delete_resources(publicIds);
+    }
+
+    await product.deleteOne();
+
+    return res.status(200).json({
+      message: "Product and images deleted successfully",
+    });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.error("DELETE PRODUCT ERROR:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 
 const editProductController = async (req, res) => {
   try {
