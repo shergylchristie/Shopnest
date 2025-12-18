@@ -118,11 +118,11 @@ const deleteProductController = async (req, res) => {
 
 const editProductController = async (req, res) => {
   try {
-    const id = req.params.id;
-    const product = await ProductCollection.findById(id);
+    const { id } = req.params;
     const { title, price, description, category, stock } = req.body;
     const files = req.files || [];
 
+    const product = await ProductCollection.findById(id);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
@@ -133,8 +133,8 @@ const editProductController = async (req, res) => {
     if (category !== undefined) product.category = category;
     if (stock !== undefined) product.stock = stock;
 
-    if (files.length) {
-      const newImages = files.map((file) => file.filename);
+    if (files.length > 0) {
+      const newImages = files.map((file) => file.path);
 
       product.images = [...(product.images || []), ...newImages];
 
@@ -145,11 +145,16 @@ const editProductController = async (req, res) => {
 
     await product.save();
 
-    return res.status(200).json({ message: "Details Updated Successfully" });
+    return res.status(200).json({
+      message: "Product updated successfully",
+      product,
+    });
   } catch (error) {
+    console.error("EDIT PRODUCT ERROR:", error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 
 const getReplyData = async (req, res) => {
   try {
