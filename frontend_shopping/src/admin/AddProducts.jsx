@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Slidebar from "./Slidebar";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { apiFetch } from "../apiClient";
 
 const AddProducts = () => {
   const [product, setProduct] = useState({
