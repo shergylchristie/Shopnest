@@ -89,7 +89,8 @@ const App = () => {
        };
 
        hydrate();
-     }, [token]);
+     }, [token, guestCart.length, guestWishlist.length]);
+
 
 
 
