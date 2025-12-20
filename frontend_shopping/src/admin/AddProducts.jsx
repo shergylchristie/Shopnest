@@ -201,7 +201,7 @@ const AddProducts = () => {
                       onClick={() => removeImage(idx)}
                       className="absolute top-1 right-1 bg-black bg-opacity-60 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
                     >
-                      ×
+                      x
                     </button>
                   </div>
                 ))}
