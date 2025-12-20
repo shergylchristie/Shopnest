@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { apiFetch } from "../apiClient";
 import { IoIosClose } from "react-icons/io";
+import { FaUndo } from "react-icons/fa";
 
 const MAX_IMAGES = 5;
 const MAX_SIZE = 5 * 1024 * 1024;
@@ -268,7 +269,7 @@ const EditProduct = () => {
                         }
                         className="absolute top-1 right-1 bg-black bg-opacity-60 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
                       >
-                        Undo
+                        <FaUndo/>
                       </button>
                     ) : (
                       <button
