@@ -607,10 +607,9 @@ const deleteUserAccount = async (req, res) => {
     }
      
     await Promise.all([
-      QueryCollection.deleteMany({ userId: userid }),
-      CartCollection.deleteMany({ userId: userid }),
-      WishlistCollection.deleteMany({ userId: userid }),
-      Address.deleteMany({ userId: userid }),
+      CartCollection.deleteMany({ userid: userid }),
+      WishlistCollection.deleteMany({ userid: userid }),
+      Address.deleteMany({ userid: userid }),
     ]);
 
     await userCollection.findByIdAndDelete(userid);

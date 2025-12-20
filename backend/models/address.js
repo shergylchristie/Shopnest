@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const { model, Schema } = mongoose;
 
 const addressSchema = new Schema({
-  userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  userid: { type: Schema.Types.ObjectId, ref: "User", required: true },
 
   name: { type: String, required: true },
   phone: { type: String, required: true },
