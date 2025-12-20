@@ -267,7 +267,7 @@ const EditProduct = () => {
                   >
                     <img
                       src={img.replacementPreview || img.url}
-                      className="w-full h-full object-cover rounded"
+                      className="w-full h-full object-contain rounded"
                     />
 
                     {!img.isDeleted ? (
