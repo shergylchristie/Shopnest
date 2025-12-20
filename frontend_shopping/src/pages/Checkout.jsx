@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { FiShoppingCart, FiLock } from "react-icons/fi";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { fetchCart, cartTotal, clearCart } from "../features/cartSlice";
+import { replace, useNavigate } from "react-router-dom";
+import { cartTotal, clearCart } from "../features/cartSlice";
 import { apiFetch } from "../apiClient";
 import { Skeleton } from "@mui/material";
 
@@ -158,6 +158,11 @@ const CheckoutPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  if(cartData.length == 0){
+    navigate("/", { replace: true });
+    return;
+  }
+
   const [user, setUser] = useState({ name: "", email: "", address: [] });
   const [selectedAddressIndex, setSelectedAddressIndex] = useState(0);
   const [showAddressDropdown, setShowAddressDropdown] = useState(false);
@@ -187,14 +192,13 @@ const CheckoutPage = () => {
     const init = async () => {
       try {
         setLoadingCheckout(true);
-        if (userid) await dispatch(fetchCart(userid));
         await loadUser();
       } finally {
         setLoadingCheckout(false);
       }
     };
     init();
-  }, [dispatch, navigate, userid, token]);
+  }, [ navigate,  token]);
 
   useEffect(() => {
     if (cartData.length > 0) dispatch(cartTotal());

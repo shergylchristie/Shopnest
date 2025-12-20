@@ -47,6 +47,12 @@ const App = () => {
     }
   }, [token]);
 
+   useEffect(() => {
+     if (token) {
+       setHydrated(false);
+     }
+   }, [token]);
+
   useEffect(() => {
     if (!token) return;
 
@@ -56,10 +62,8 @@ const App = () => {
     const cartSnapshot = cartSnapshotRef.current;
     const wishlistSnapshot = wishlistSnapshotRef.current;
 
-    if (!cartSnapshot && !wishlistSnapshot) return;
 
     const hydrate = async () => {
-      console.log("HYDRATION EFFECT FIRED", { token });
       try {
         if (cartSnapshot?.length > 0) {
           await dispatch(
