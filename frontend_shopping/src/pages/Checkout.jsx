@@ -158,7 +158,9 @@ const CheckoutPage = () => {
   const userid = localStorage.getItem("user");
   const dispatch = useDispatch();
   const navigate = useNavigate();
+   const paymentCompletedRef = useRef(false);
   const [paying, setPaying] = useState(false);
+  
 
   const location = useLocation();
 
@@ -166,10 +168,14 @@ const CheckoutPage = () => {
     return null;
   }
 
-  if (cartData.length === 0) {
-    navigate("/", { replace: true });
-    return null;
-  }
+  if (paymentCompletedRef.current) {
+  return null;
+}
+
+if (cartData.length === 0  ) {
+  navigate("/", { replace: true });
+  return null;
+}
 
   const [user, setUser] = useState({ name: "", email: "", address: [] });
   const [selectedAddressIndex, setSelectedAddressIndex] = useState(0);
@@ -378,6 +384,7 @@ const CheckoutPage = () => {
             .then((r) => r.json())
             .then((result) => {
               if (result.success) {
+                paymentCompletedRef.current = true;
                 toast.success(result.message);
                 dispatch(clearCart());
                 setPaying(false);
@@ -412,7 +419,7 @@ const CheckoutPage = () => {
         modal: {
           ondismiss: () => {
             setPaying(false);
-            navigate("/cart", { replace: true });
+            navigate("/cart",{replace:true});
           },
         },
       };
