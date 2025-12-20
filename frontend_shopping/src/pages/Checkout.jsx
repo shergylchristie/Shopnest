@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { FiShoppingCart, FiLock } from "react-icons/fi";
 import { useSelector, useDispatch } from "react-redux";
@@ -157,10 +157,12 @@ const CheckoutPage = () => {
   const userid = localStorage.getItem("user");
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const paymentCompletedRef = useRef(false);
+  const [paying, setPaying] = useState(false);
 
-  if(cartData.length == 0){
+  if (cartData.length === 0 && !paymentCompletedRef.current) {
     navigate("/", { replace: true });
-    return;
+    return null;
   }
 
   const [user, setUser] = useState({ name: "", email: "", address: [] });
@@ -198,7 +200,7 @@ const CheckoutPage = () => {
       }
     };
     init();
-  }, [ navigate,  token]);
+  }, [navigate, token]);
 
   useEffect(() => {
     if (cartData.length > 0) dispatch(cartTotal());
@@ -309,6 +311,10 @@ const CheckoutPage = () => {
   };
 
   const handlePayment = async () => {
+    if (paying) return;
+
+    setPaying(true);
+
     if (cartData.length === 0) {
       toast.error("Your cart is empty.");
       return;
@@ -367,7 +373,9 @@ const CheckoutPage = () => {
             .then((result) => {
               if (result.success) {
                 toast.success(result.message);
+                paymentCompletedRef.current = true;
                 dispatch(clearCart());
+                setPaying(false);
                 navigate("/order-success", {
                   replace: true,
                   state: {
@@ -377,7 +385,10 @@ const CheckoutPage = () => {
                 });
               } else toast.error(result.message);
             })
-            .catch(() => toast.error("Payment verification failed."));
+            .catch(() => {
+              setPaying(false);
+              toast.error("Payment verification failed.");
+            });
         },
         prefill: {
           name: selectedAddress.name || user.name || "",
@@ -774,7 +785,7 @@ const CheckoutPage = () => {
               onClick={handlePayment}
               className="mt-3 w-full rounded-xl bg-slate-900 px-4 py-2.5 text-xs sm:text-sm font-medium text-white shadow-sm transition hover:bg-slate-800 active:scale-[0.99]"
             >
-              Continue to Payment
+              {paying ? "Processing..." : "Continue to Payment"}
             </button>
             <button
               onClick={() => navigate("/cart")}
