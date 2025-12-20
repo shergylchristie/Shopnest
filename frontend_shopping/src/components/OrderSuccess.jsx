@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { CheckCircle } from "lucide-react";
 import { resetPayment } from "../features/cartSlice";
+import { useEffect } from "react";
 
 
 
