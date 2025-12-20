@@ -268,7 +268,7 @@ const ProfilePage = () => {
                 Saved addresses
               </h2>
               <button
-                onClick={() => navigate("/editprofile/?add=new")}
+                onClick={() => navigate("/editprofile")}
                 className="text-xs text-slate-600 hover:text-slate-900"
               >
                 Add new

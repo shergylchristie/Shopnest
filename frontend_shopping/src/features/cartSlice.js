@@ -170,7 +170,11 @@ export const cartSlice = createSlice({
       })
       .addCase(deleteCartItemThunk.fulfilled, (state, action) => {
         const { cartItems } = action.payload;
-        state.cart = cartItems ?? state.cart;
+        if (state.cart.length === 0) {
+          state.cart = [];
+        } else if (cartItems) {
+          state.cart = cartItems;
+        }
       })
       .addCase("app/logout", () => initialState);
   },

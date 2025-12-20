@@ -8,7 +8,7 @@ import {
   FiSave,
   FiChevronDown,
 } from "react-icons/fi";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { apiFetch } from "../apiClient";
 import { Skeleton } from "@mui/material";
 
@@ -207,7 +207,7 @@ const EditProfilePage = () => {
   const id = localStorage.getItem("user");
   const { addId } = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
+  
   const [user, setUser] = useState({
     name: "",
     phone: "",
@@ -247,15 +247,7 @@ const EditProfilePage = () => {
   const initials = username?.match(/\b\w/g)?.join("").toUpperCase() || "?";
 
   const toggle = (key) =>
-    setShowPass((prev) => ({ ...prev, [key]: !prev[key] }));
-
-  useEffect(() => {
-    const searchParams = new URLSearchParams(location.search);
-    if (searchParams.get("add") === "new") {
-      setAddressOpen(true);
-      setProfileOpen(false);
-    }
-  }, [location.search]);
+    setShowPass((prev) => ({ ...prev, [key]: !prev[key] }))
 
 
   useEffect(() => {

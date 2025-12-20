@@ -89,7 +89,12 @@ const wishlistSlice = createSlice({
          state.wishlist = state.wishlist.filter((item) => item._id !== productId);
       })
       .addCase(deleteWishlistItemThunk.fulfilled, (state, action) => {
-        state.wishlist = action.payload.wishlistItems;
+         const { wishlistItems } = action.payload;
+         if (state.wishlist.length === 0) {
+           state.wishlist = [];
+         } else if (wishlistItems) {
+           state.wishlist = wishlistItems;
+         }
       })
       .addCase(savewishlist.fulfilled, (state, action) => {
         if (action.payload?.wishlistItems) {
