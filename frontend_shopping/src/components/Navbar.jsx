@@ -26,8 +26,12 @@ export default function Navbar({ hydrated ,setActiveCategory }) {
   const [results, setResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
-  const cartCount = token && !hydrated ? null : useSelector((state) => state.cartItem.cart?.length || 0);
-  const wishlistCount = token && !hydrated ? null : useSelector((state) => state.wishlistItem.wishlist?.length || 0);
+  const cartLength =  useSelector((state) => state.cartItem.cart.length ?? 0);
+  const wishlistLength = useSelector((state) => state.wishlistItem.wishlist.length ?? 0);
+  const cartCount = token && !hydrated ? null : cartLength;
+  const wishlistCount = token && !hydrated ? null : wishlistLength;
+
+
 
   const dispatch = useDispatch();
 
