@@ -126,7 +126,6 @@ const EditProduct = () => {
       {
         file,
         preview: URL.createObjectURL(file),
-        name: file.name,
       },
     ]);
   };
@@ -146,7 +145,6 @@ const EditProduct = () => {
     setIsSaving(true);
 
     const formdata = new FormData();
-
     formdata.append("title", product.title);
     formdata.append("price", product.price);
     formdata.append("description", product.description);
@@ -205,7 +203,7 @@ const EditProduct = () => {
           <form
             onSubmit={handleSubmit}
             encType="multipart/form-data"
-            className="bg-white rounded shadow p-4 md:p-6 space-y-6 w-full md:max-w-full"
+            className="bg-white rounded shadow p-4 md:p-6 space-y-6 w-full"
           >
             <div>
               <label className="block mb-1 font-semibold">Title</label>
@@ -230,6 +228,20 @@ const EditProduct = () => {
             </div>
 
             <div>
+              <label className="block mb-1 font-semibold">Stock Status</label>
+              <select
+                name="stock"
+                value={product.stock}
+                onChange={handleChange}
+                className="w-full border rounded px-3 py-2"
+              >
+                <option value="">--SELECT--</option>
+                <option value="In-Stock">In Stock</option>
+                <option value="Out-Of-Stock">Out Of Stock</option>
+              </select>
+            </div>
+
+            <div>
               <label className="block mb-1 font-semibold">Description</label>
               <textarea
                 name="description"
@@ -245,20 +257,18 @@ const EditProduct = () => {
                 Max 5 images allowed · Image size &lt; 5MB
               </p>
 
-              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
+              <div className="flex flex-wrap gap-3">
                 {imageSlots.map((img) => (
                   <div
-                    key={`existing-${img.index}`}
-                    className={`relative rounded border p-1 ${
+                    key={img.index}
+                    className={`relative w-20 h-20 border rounded ${
                       img.isDeleted ? "opacity-40" : ""
                     }`}
                   >
-                    <div className="aspect-square w-full overflow-hidden rounded">
-                      <img
-                        src={img.replacementPreview || img.url}
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
+                    <img
+                      src={img.replacementPreview || img.url}
+                      className="w-full h-full object-cover rounded"
+                    />
 
                     {!img.isDeleted ? (
                       <button
@@ -291,15 +301,13 @@ const EditProduct = () => {
 
                 {newImages.map((img, index) => (
                   <div
-                    key={`new-${index}`}
-                    className="relative rounded border p-1"
+                    key={index}
+                    className="relative w-20 h-20 border rounded"
                   >
-                    <div className="aspect-square w-full overflow-hidden rounded">
-                      <img
-                        src={img.preview}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
+                    <img
+                      src={img.preview}
+                      className="w-full h-full object-cover rounded"
+                    />
                     <button
                       type="button"
                       onClick={() => removeNewImage(index)}
@@ -311,8 +319,8 @@ const EditProduct = () => {
                 ))}
 
                 {totalImages < MAX_IMAGES && (
-                  <label className="flex items-center justify-center aspect-square border-dashed border rounded cursor-pointer text-xs text-gray-500">
-                    + Add
+                  <label className="w-20 h-20 border-dashed border rounded flex items-center justify-center cursor-pointer text-xs">
+                    +
                     <input
                       type="file"
                       accept="image/*"
