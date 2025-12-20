@@ -31,13 +31,14 @@ const AccountDeletePage = () => {
         headers:{"Content-Type":"application/json",
           Authorization: `Bearer ${token}`
         },
-        body:JSON.stringify(password)
+        body:JSON.stringify({password})
        })
-       const result = res.json()
+       const result = await res.json()
        if(res.ok)
-        toast.success(result)
+       { dispatch(appLogout())
+        toast.success(result.message)}
       else
-        toast.error("Something went wrong")
+        toast.error(result.message)
     } catch (error) {
       toast.error(error)
     }

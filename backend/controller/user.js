@@ -588,14 +588,11 @@ const orderVerifyController = async (req, res) => {
 };
 
 const deleteUserAccount = async (req, res) => {
-console.log(req.body)
-console.log(req.params)
-
 try {
-  const { password } = req.body;
+  const {password}= req.body;
   const { userid } = req.params;
 
-   const userExists = await userCollection.findOne({ userid });
+   const userExists = await userCollection.findbyId(userid);
 
    if (!userExists) {
      return res
@@ -609,12 +606,10 @@ try {
      return res.status(400).json({ message: "Incorrect Password" });
    }
 
-   const deletedItem = await userCollection.findByIdAndDelete({userid})
+    await userCollection.findByIdAndDelete(userid)
    
-   if(deletedItem)
+   
    res.status(200).json({message:"Account successfully deleted"})
-  else
-    res.status(401).json({message:"Something went wrong"})
 
   
 } catch (error) {
