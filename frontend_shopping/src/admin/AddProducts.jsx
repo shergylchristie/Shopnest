@@ -3,7 +3,7 @@ import Slidebar from "./Slidebar";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../apiClient";
-import CloseIcon from "@mui/icons-material/Close";
+import { IoIosClose } from "react-icons/io";
 
 const MAX_IMAGES = 5;
 const MAX_SIZE_MB = 5;
@@ -202,7 +202,7 @@ const AddProducts = () => {
                       onClick={() => removeImage(idx)}
                       className="absolute top-1 right-1 bg-black bg-opacity-60 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
                     >
-                      <CloseIcon/>
+                      <IoIosClose />
                     </button>
                   </div>
                 ))}
