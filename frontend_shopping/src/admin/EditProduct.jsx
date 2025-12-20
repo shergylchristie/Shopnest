@@ -247,7 +247,7 @@ const EditProduct = () => {
                 {imageSlots.map((img) => (
                   <div
                     key={img.index}
-                    className={`relative w-20 h-20 border rounded overflow-hidden ${
+                    className={`relative w-24 h-24 border rounded overflow-hidden ${
                       img.deleted ? "opacity-40" : ""
                     }`}
                   >
@@ -255,6 +255,7 @@ const EditProduct = () => {
                       src={img.preview || img.url}
                       className="w-full h-full object-contain"
                     />
+
                     {img.deleted ? (
                       <button
                         type="button"
@@ -267,17 +268,17 @@ const EditProduct = () => {
                             )
                           )
                         }
-                        className="absolute top-1 right-1 bg-black bg-opacity-60 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
+                        className="absolute top-1 right-1 bg-black bg-opacity-60 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center cursor-pointer"
                       >
-                        <FaUndo/>
+                        <FaUndo />
                       </button>
                     ) : (
                       <button
                         type="button"
                         onClick={() => deleteExisting(img.index)}
-                        className="absolute top-1 right-1 bg-black bg-opacity-60 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
+                        className="absolute top-1 right-1 bg-black bg-opacity-60 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center cursor-pointer"
                       >
-                        <IoIosClose/>
+                        <IoIosClose />
                       </button>
                     )}
 
@@ -301,17 +302,28 @@ const EditProduct = () => {
                 {newImages.map((img, i) => (
                   <div
                     key={i}
-                    className="relative w-20 h-20 border rounded overflow-hidden"
+                    className="relative w-24 h-24 border rounded overflow-hidden"
                   >
                     <img
                       src={img.preview}
                       className="w-full h-full object-contain"
                     />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setNewImages((prev) =>
+                          prev.filter((_, idx) => idx !== i)
+                        )
+                      }
+                      className="absolute top-1 right-1 bg-black bg-opacity-60 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center cursor-pointer"
+                    >
+                      <IoIosClose />
+                    </button>
                   </div>
                 ))}
 
-                {imageSlots.length < MAX_IMAGES && (
-                  <label className="w-20 h-20 border-dashed border-2 rounded flex items-center justify-center text-xs cursor-pointer">
+                {totalImages < MAX_IMAGES && (
+                  <label className="w-24 h-24 border-dashed border-2 rounded flex items-center justify-center text-xs cursor-pointer">
                     +
                     <input
                       type="file"
