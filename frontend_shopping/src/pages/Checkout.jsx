@@ -376,8 +376,8 @@ if (cartData.length === 0) {
             .then((r) => r.json())
             .then((result) => {
               if (result.success) {
-                toast.success(result.message);
                 paymentCompletedRef.current = true;
+                toast.success(result.message);
                 dispatch(clearCart());
                 setPaying(false);
                 navigate("/order-success", {
