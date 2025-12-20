@@ -25,6 +25,7 @@
     "nodemailer": "^7.0.10",
     "nodemon": "^3.1.10",
     "razorpay": "^2.9.6",
-    "regex": "^6.0.1"
+    "regex": "^6.0.1",
+    "resend": "^6.6.0"
   }
 }
