@@ -249,6 +249,13 @@ const EditProfilePage = () => {
   const toggle = (key) =>
     setShowPass((prev) => ({ ...prev, [key]: !prev[key] }));
 
+   useEffect(() => {
+     if (addId === "" && location.state?.openAddress) {
+       setAddressOpen(true);
+       setProfileOpen(false);
+     }
+   }, [addId, location.state]);
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) setShowProfile(true);
@@ -438,12 +445,7 @@ const EditProfilePage = () => {
       setUpdatingPassword(false);
     }
   };
-  useEffect(() => {
-    if (addId === "" && location.state?.openAddress) {
-      setAddressOpen(true);
-      setProfileOpen(false);
-    }
-  }, [addId, location.state]);
+ 
 
   return (
     <div className="bg-slate-50 flex items-center justify-center px-4 py-2 md:py-5">
