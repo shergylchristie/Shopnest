@@ -249,12 +249,14 @@ const EditProfilePage = () => {
   const toggle = (key) =>
     setShowPass((prev) => ({ ...prev, [key]: !prev[key] }));
 
-   useEffect(() => {
-     if (addId === "" && location.state?.openAddress) {
-       setAddressOpen(true);
-       setProfileOpen(false);
-     }
-   }, [addId, location.state]);
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    if (searchParams.get("add") === "new") {
+      setAddressOpen(true);
+      setProfileOpen(false);
+    }
+  }, [location.search]);
+
 
   useEffect(() => {
     const token = localStorage.getItem("token");
