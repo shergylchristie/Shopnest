@@ -306,7 +306,7 @@ const EditProduct = () => {
                   >
                     <img
                       src={img.preview}
-                      className="w-full h-full object-cover rounded"
+                      className="w-full h-full object-contain rounded"
                     />
                     <button
                       type="button"
