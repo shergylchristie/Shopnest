@@ -159,11 +159,15 @@ const CheckoutPage = () => {
   const navigate = useNavigate();
   const paymentCompletedRef = useRef(false);
   const [paying, setPaying] = useState(false);
+  
+if (paymentCompletedRef.current) {
+  return null;
+}
 
-  if (cartData.length === 0 && !paymentCompletedRef.current) {
-    navigate("/", { replace: true });
-    return null;
-  }
+if (cartData.length === 0) {
+  navigate("/", { replace: true });
+  return null;
+}
 
   const [user, setUser] = useState({ name: "", email: "", address: [] });
   const [selectedAddressIndex, setSelectedAddressIndex] = useState(0);
@@ -406,7 +410,7 @@ const CheckoutPage = () => {
         modal: {
           ondismiss: () => {
             setPaying(false);
-            navigate("/cart");
+            navigate("/cart",{replace:true});
           },
         },
       };
