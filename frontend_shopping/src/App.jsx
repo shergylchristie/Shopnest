@@ -70,6 +70,7 @@ const App = () => {
     if (!cartSnapshot && !wishlistSnapshot) return;
 
     const hydrate = async () => {
+      console.log("HYDRATION EFFECT FIRED", { token });
       try {
         if (cartSnapshot?.length > 0) {
           await dispatch(
