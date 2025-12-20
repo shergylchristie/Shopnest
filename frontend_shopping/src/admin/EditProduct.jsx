@@ -151,7 +151,6 @@ const EditProduct = () => {
     <div className="h-[calc(100vh-4rem)] flex overflow-hidden bg-gray-50">
       <Slidebar />
       <div className="flex-1 overflow-y-auto scrollbar-hide p-6">
-
         <form
           onSubmit={handleSubmit}
           className="bg-white p-6 rounded-md shadow space-y-4"
@@ -204,9 +203,7 @@ const EditProduct = () => {
             <textarea
               rows={2}
               value={form.description}
-              onChange={(e) =>
-                setForm({ ...form, description: e.target.value })
-              }
+              onChange={(e) => setForm({ ...form, category: e.target.value })}
               className="w-full border p-2 rounded"
             />
           </div>
