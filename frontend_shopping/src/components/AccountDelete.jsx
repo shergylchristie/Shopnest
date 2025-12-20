@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { FiLock } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../apiClient";
+import {toast} from "react-hot-toast"
 
 const AccountDeletePage = () => {
   const [password, setPassword] = useState("");
