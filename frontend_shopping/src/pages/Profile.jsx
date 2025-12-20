@@ -270,7 +270,7 @@ const ProfilePage = () => {
               <button
                 onClick={() =>
                   navigate("/editprofile", {
-                    state: { openAddress: true },
+                    state: { openAddress: true, closeProfile: true },
                   })
                 }
                 className="text-xs text-slate-600 hover:text-slate-900"

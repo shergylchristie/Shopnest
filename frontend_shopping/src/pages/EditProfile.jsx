@@ -205,6 +205,7 @@ const EditProfilePage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const openFromNav = location.state?.openAddress;
+  const closeProfileFromNav = location.state?.closeProfile;
 
   
   const [user, setUser] = useState({
@@ -232,16 +233,17 @@ const EditProfilePage = () => {
   const [saving, setSaving] = useState(false);
   const [updatingPassword, setUpdatingPassword] = useState(false);
 
-  const [profileOpen, setProfileOpen] = useState(!addId || !openFromNav);
+  const [profileOpen, setProfileOpen] = useState(closeProfileFromNav ? false : !addId);
   const [addressOpen, setAddressOpen] = useState(!!addId || !!openFromNav);
   const [securityOpen, setSecurityOpen] = useState(false);
   const [dangerOpen, setDangerOpen] = useState(false);
 
-  useEffect(() => {
-    if (openFromNav) {
-      window.history.replaceState({}, document.title);
-    }
-  }, []);
+ useEffect(() => {
+   if (openFromNav || closeProfileFromNav) {
+     window.history.replaceState({}, document.title);
+   }
+ }, []);
+
 
   const [password, setPassword] = useState({
     currentPassword: "",
