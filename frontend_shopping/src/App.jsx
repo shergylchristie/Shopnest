@@ -32,9 +32,8 @@ const App = () => {
   const dispatch = useDispatch();
   const cartSnapshotRef = useRef(null);
   const wishlistSnapshotRef = useRef(null);
-
- const [token, setToken] = useState(() => localStorage.getItem("token"));
-
+  const [hydrated, setHydrated] = useState(false);
+  const [token, setToken] = useState(() => localStorage.getItem("token"));
 
   useEffect(() => {
     if (!token) return;
@@ -85,9 +84,12 @@ const App = () => {
 
         await dispatch(fetchCart(userid)).unwrap();
         await dispatch(fetchwishlist(userid)).unwrap();
+        
 
         cartSnapshotRef.current = null;
         wishlistSnapshotRef.current = null;
+
+        setHydrated(true);
       } catch (error) {
         console.error("Hydration failed", error);
       }
@@ -100,7 +102,10 @@ const App = () => {
   return (
     <BrowserRouter>
       <ScrollToTop />
-      <Navbar token={token} setActiveCategory={setActiveCategory} />
+      <Navbar
+        hydrated={hydrated}
+        setActiveCategory={setActiveCategory}
+      />
       <div className="min-h-screen pt-16 bg-gray-50">
         <Routes>
           <Route

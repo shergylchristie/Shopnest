@@ -17,7 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { appLogout } from "../features/appActions";
 import { apiFetch } from "../apiClient";
 
-export default function Navbar({ setActiveCategory }) {
+export default function Navbar({ hydrated ,setActiveCategory }) {
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
   const [navOpen, setNavOpen] = useState(false);
@@ -26,8 +26,8 @@ export default function Navbar({ setActiveCategory }) {
   const [results, setResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
-  const cartCount = useSelector((state) => state.cartItem.cart.length ?? 0);
-  const wishlistCount = useSelector((state) => state.wishlistItem.wishlist.length ?? 0);
+  const cartCount = token && !hydrated ? "" : useSelector((state) => state.cartItem.cart.length ?? 0);
+  const wishlistCount = token && !hydrated ? "" : useSelector((state) => state.wishlistItem.wishlist.length ?? 0);
 
   const dispatch = useDispatch();
 
