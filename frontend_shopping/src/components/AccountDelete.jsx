@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { FiLock } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
+import { apiFetch } from "../apiClient";
 
 const AccountDeletePage = () => {
   const [password, setPassword] = useState("");
@@ -22,18 +23,23 @@ const AccountDeletePage = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleDelete = (e) => {
+ async function handleDelete(e) {
     e.preventDefault();
     try {
-       fetch(`/api/deleteAccount/${userid}`,{
+    const res = await apiFetch(`/api/deleteAccount/${userid}`,{
         method:"DELETE",
         headers:{"Content-Type":"application/json",
           Authorization: `Bearer ${token}`
         },
         body:JSON.stringify(password)
        })
+       const result = res.json()
+       if(res.ok)
+        toast.success(result)
+      else
+        toast.error("Something went wrong")
     } catch (error) {
-      
+      toast.error(error)
     }
     
   };
