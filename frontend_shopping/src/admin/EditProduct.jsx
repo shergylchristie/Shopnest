@@ -147,169 +147,202 @@ const EditProduct = () => {
     setSaving(false);
   };
 
+  const effectiveImageCount =
+    imageSlots.filter((i) => !i.deleted || i.replacement).length +
+    newImages.length;
+
   return (
     <div className="h-[calc(100vh-4rem)] flex overflow-hidden bg-gray-50">
       <Slidebar />
-      <div className="flex-1 overflow-y-auto scrollbar-hide p-6">
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white p-6 rounded-md shadow space-y-4"
-        >
-          <h1 className="text-2xl font-bold">Edit Product</h1>
 
-          <div>
-            <label className="text-sm font-medium">Title</label>
-            <input
-              value={form.title}
-              onChange={(e) => setForm({ ...form, title: e.target.value })}
-              className="w-full border p-2 rounded"
-            />
-          </div>
+      <div className="flex flex-col lg:flex-row w-full mt-9 md:mt-1">
+        <div className="flex-1 overflow-y-auto scrollbar-hide pt-7 md:pt-6 p-6">
+          <h1 className="text-lg md:text-4xl mb-4 md:mb-8 font-bold font-mono">
+            Edit Product
+          </h1>
 
-          <div>
-            <label className="text-sm font-medium">Price</label>
-            <input
-              type="number"
-              value={form.price}
-              onChange={(e) => setForm({ ...form, price: e.target.value })}
-              className="w-full border p-2 rounded"
-            />
-          </div>
+          <form
+            onSubmit={handleSubmit}
+            encType="multipart/form-data"
+            className="max-w-screen mx-auto p-6 bg-white rounded shadow space-y-6"
+          >
+            <div>
+              <label className="block text-gray-700 font-semibold mb-2">
+                Title
+              </label>
+              <input
+                type="text"
+                value={form.title}
+                onChange={(e) => setForm({ ...form, title: e.target.value })}
+                className="w-full border border-gray-300 rounded px-3 py-2"
+              />
+            </div>
 
-          <div>
-            <label className="block text-gray-700 font-semibold mb-2">
-              Category
-            </label>
-            <select
-              name="category"
-              value={form.category}
-              onChange={(e) => setForm({ ...form, category: e.target.value })}
-              className="w-full border border-gray-300 rounded px-3 py-2"
-            >
-              <option value="Fashion">Fashion</option>
-              <option value="Electronics">Electronics</option>
-              <option value="Mobile">Mobile</option>
-              <option value="Footwear">Footwear</option>
-              <option value="Furniture">Furniture</option>
-              <option value="Books">Books</option>
-              <option value="Grocery">Grocery</option>
-              <option value="Camera">Camera</option>
-            </select>
-          </div>
+            <div>
+              <label className="block text-gray-700 font-semibold mb-2">
+                Price
+              </label>
+              <input
+                type="number"
+                onWheel={(e) => e.target.blur()}
+                value={form.price}
+                onChange={(e) => setForm({ ...form, price: e.target.value })}
+                className="w-full border border-gray-300 rounded px-3 py-2"
+              />
+            </div>
 
-          <div>
-            <label className="text-sm font-medium">Description</label>
-            <textarea
-              rows={2}
-              value={form.description}
-              onChange={(e) =>
-                setForm({ ...form, description: e.target.value })
-              }
-              className="w-full border p-2 rounded"
-            />
-          </div>
+            <div>
+              <label className="block text-gray-700 font-semibold mb-2">
+                Description
+              </label>
+              <textarea
+                rows={2}
+                value={form.description}
+                onChange={(e) =>
+                  setForm({ ...form, description: e.target.value })
+                }
+                className="w-full border border-gray-300 rounded px-3 py-2 resize-none"
+              />
+            </div>
 
-          <div>
-            <label className="text-sm font-medium">Stock Status</label>
-            <select
-              value={form.stock}
-              onChange={(e) => setForm({ ...form, stock: e.target.value })}
-              className="w-full border p-2 rounded"
-            >
-              <option value="In-Stock">In Stock</option>
-              <option value="Out-Of-Stock">Out Of Stock</option>
-            </select>
-          </div>
+            <div>
+              <label className="block text-gray-700 font-semibold mb-2">
+                Category
+              </label>
+              <select
+                name="category"
+                value={form.category}
+                onChange={(e) => setForm({ ...form, category: e.target.value })}
+                className="w-full border border-gray-300 rounded px-3 py-2"
+              >
+                <option value="Fashion">Fashion</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Mobile">Mobile</option>
+                <option value="Footwear">Footwear</option>
+                <option value="Furniture">Furniture</option>
+                <option value="Books">Books</option>
+                <option value="Grocery">Grocery</option>
+                <option value="Camera">Camera</option>
+              </select>
+            </div>
 
-          <div>
-            <label className="text-sm font-medium">
-              Images{" "}
-              <span className="text-xs text-gray-500">(max 5, &lt; 5MB)</span>
-            </label>
+            <div>
+              <label className="block text-gray-700 font-semibold mb-2">
+                Stock Status
+              </label>
+              <select
+                value={form.stock}
+                onChange={(e) => setForm({ ...form, stock: e.target.value })}
+                className="w-full border border-gray-300 rounded px-3 py-2"
+              >
+                <option value="In-Stock">In Stock</option>
+                <option value="Out-Of-Stock">Out Of Stock</option>
+              </select>
+            </div>
 
-            <div className="flex flex-wrap gap-3 mt-2">
-              {imageSlots.map((img) => (
-                <div
-                  key={img.index}
-                  className={`relative w-16 h-16 border rounded ${
-                    img.deleted ? "opacity-40" : ""
-                  }`}
-                >
-                  <img
-                    src={img.preview || img.url}
-                    className="w-full h-full object-contain rounded"
-                  />
-                  {img.deleted ? (
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setImageSlots((prev) =>
-                          prev.map((i) =>
-                            i.index === img.index ? { ...i, deleted: false } : i
-                          )
-                        )
-                      }
-                      className="absolute top-0 right-0 bg-white text-[10px] px-1 rounded"
-                    >
-                      Undo
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => deleteExisting(img.index)}
-                      className="absolute top-0 right-0 bg-white text-xs px-1 rounded cursor-pointer z-10"
-                    >
-                      ✕
-                    </button>
-                  )}
+            <div>
+              <label className="block text-gray-700 font-semibold mb-2">
+                Images
+              </label>
 
-                  <button
-                    type="button"
-                    className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-[10px] py-[2px] cursor-pointer"
+              <div className="flex flex-wrap gap-3 mb-2">
+                {imageSlots.map((img) => (
+                  <div
+                    key={img.index}
+                    className={`relative w-20 h-20 border rounded overflow-hidden ${
+                      img.deleted ? "opacity-40" : ""
+                    }`}
                   >
-                    Replace
+                    <img
+                      src={img.preview || img.url}
+                      className="w-full h-full object-contain"
+                    />
+                    {img.deleted ? (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setImageSlots((prev) =>
+                            prev.map((i) =>
+                              i.index === img.index
+                                ? { ...i, deleted: false }
+                                : i
+                            )
+                          )
+                        }
+                        className="absolute top-1 right-1 bg-black bg-opacity-60 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
+                      >
+                        Undo
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => deleteExisting(img.index)}
+                        className="absolute top-1 right-1 bg-black bg-opacity-60 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
+                      >
+                        ×
+                      </button>
+                    )}
+
+                    <button
+                      type="button"
+                      className="absolute bottom-1 left-1 right-1 bg-black/60 text-white text-[10px] py-[2px] rounded cursor-pointer"
+                    >
+                      Replace
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) =>
+                          replaceImage(img.index, e.target.files[0])
+                        }
+                        className="absolute inset-0 opacity-0 cursor-pointer"
+                      />
+                    </button>
+                  </div>
+                ))}
+
+                {newImages.map((img, i) => (
+                  <div
+                    key={i}
+                    className="relative w-20 h-20 border rounded overflow-hidden"
+                  >
+                    <img
+                      src={img.preview}
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                ))}
+
+                {effectiveImageCount < MAX_IMAGES && (
+                  <label className="w-20 h-20 border-dashed border-2 rounded flex items-center justify-center text-xs cursor-pointer">
+                    +
                     <input
                       type="file"
                       accept="image/*"
-                      onChange={(e) =>
-                        replaceImage(img.index, e.target.files[0])
-                      }
-                      className="absolute inset-0 opacity-0 cursor-pointer"
+                      hidden
+                      onChange={(e) => addNewImage(e.target.files[0])}
                     />
-                  </button>
-                </div>
-              ))}
+                  </label>
+                )}
+              </div>
 
-              {newImages.map((img, i) => (
-                <div key={i} className="w-16 h-16 border rounded">
-                  <img
-                    src={img.preview}
-                    className="w-full h-full object-contain rounded"
-                  />
-                </div>
-              ))}
-
-              {totalImages < MAX_IMAGES && (
-                <label className="w-16 h-16 border-dashed border rounded flex items-center justify-center cursor-pointer">
-                  +
-                  <input
-                    type="file"
-                    hidden
-                    accept="image/*"
-                    onChange={(e) => addNewImage(e.target.files[0])}
-                  />
-                </label>
-              )}
+              <p className="text-xs text-gray-500">
+                Max 5 images · Each image &lt; 5MB
+              </p>
             </div>
-          </div>
 
-          <button
-            disabled={saving}
-            className="w-full bg-purple-600 text-white py-3 rounded disabled:opacity-60"
-          >
-            {saving ? "Saving..." : "Save Changes"}
-          </button>
-        </form>
+            <button
+              type="submit"
+              disabled={saving}
+              className={`w-full text-white font-semibold py-3 rounded ${
+                saving
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-purple-600 hover:bg-purple-700"
+              }`}
+            >
+              {saving ? "Saving..." : "Save Changes"}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );
