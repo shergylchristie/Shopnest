@@ -104,13 +104,13 @@ const ManageQuerySkeleton = () => {
             <div className="flex items-center gap-3 mt-4">
               <Skeleton
                 variant="rectangular"
-                width="calc(50%-6px)"
+                width="45%"
                 height={36}
                 className="!rounded-md bg-gray-200 !border !border-gray-300"
               />
               <Skeleton
                 variant="rectangular"
-                width="calc(50%-6px)"
+                width="45%"
                 height={36}
                 className="!rounded-md bg-gray-200 !border !border-gray-300"
               />
