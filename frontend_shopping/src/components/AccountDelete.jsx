@@ -45,7 +45,7 @@ const AccountDeletePage = () => {
         toast.success(result.message);
       } else toast.error(result.message);
     } catch (error) {
-      toast.error(error);
+      toast.error(error.message);
     }
   }
 
