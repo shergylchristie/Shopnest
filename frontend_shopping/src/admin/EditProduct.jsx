@@ -186,7 +186,6 @@ const EditProduct = () => {
               onChange={(e) => setForm({ ...form, category: e.target.value })}
               className="w-full border border-gray-300 rounded px-3 py-2"
             >
-              <option value="">--SELECT--</option>
               <option value="Fashion">Fashion</option>
               <option value="Electronics">Electronics</option>
               <option value="Mobile">Mobile</option>
@@ -217,7 +216,6 @@ const EditProduct = () => {
               onChange={(e) => setForm({ ...form, stock: e.target.value })}
               className="w-full border p-2 rounded"
             >
-              <option value="">Select</option>
               <option value="In-Stock">In Stock</option>
               <option value="Out-Of-Stock">Out Of Stock</option>
             </select>
@@ -259,18 +257,26 @@ const EditProduct = () => {
                     <button
                       type="button"
                       onClick={() => deleteExisting(img.index)}
-                      className="absolute top-0 right-0 bg-white text-xs px-1 rounded"
+                      className="absolute top-0 right-0 bg-white text-xs px-1 rounded cursor-pointer z-10"
                     >
                       ✕
                     </button>
                   )}
 
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => replaceImage(img.index, e.target.files[0])}
-                    className="absolute inset-0 opacity-0"
-                  />
+                  <button
+                    type="button"
+                    className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-[10px] py-[2px] cursor-pointer"
+                  >
+                    Replace
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) =>
+                        replaceImage(img.index, e.target.files[0])
+                      }
+                      className="absolute inset-0 opacity-0 cursor-pointer"
+                    />
+                  </button>
                 </div>
               ))}
 
