@@ -3,6 +3,7 @@ import Slidebar from "./Slidebar";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { apiFetch } from "../apiClient";
+import { IoIosClose } from "react-icons/io";
 
 const MAX_IMAGES = 5;
 const MAX_SIZE = 5 * 1024 * 1024;
@@ -147,10 +148,6 @@ const EditProduct = () => {
     setSaving(false);
   };
 
-  const effectiveImageCount =
-    imageSlots.filter((i) => !i.deleted || i.replacement).length +
-    newImages.length;
-
   return (
     <div className="h-[calc(100vh-4rem)] flex overflow-hidden bg-gray-50">
       <Slidebar />
@@ -279,7 +276,7 @@ const EditProduct = () => {
                         onClick={() => deleteExisting(img.index)}
                         className="absolute top-1 right-1 bg-black bg-opacity-60 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
                       >
-                        ×
+                        <IoIosClose/>
                       </button>
                     )}
 
@@ -312,7 +309,7 @@ const EditProduct = () => {
                   </div>
                 ))}
 
-                {effectiveImageCount < MAX_IMAGES && (
+                {imageSlots.length < MAX_IMAGES && (
                   <label className="w-20 h-20 border-dashed border-2 rounded flex items-center justify-center text-xs cursor-pointer">
                     +
                     <input
