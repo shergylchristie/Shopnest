@@ -30,21 +30,11 @@ const App = () => {
   const guestCart = useSelector((state) => state.cartItem.cart);
   const guestWishlist = useSelector((state) => state.wishlistItem.wishlist);
   const dispatch = useDispatch();
-  const [token, setToken] = useState(null);
   const cartSnapshotRef = useRef(null);
   const wishlistSnapshotRef = useRef(null);
 
-  useEffect(() => {
-    setToken(localStorage.getItem("token"));
-  }, []);
+ const [token, setToken] = useState(() => localStorage.getItem("token"));
 
-  useEffect(() => {
-    const handler = () => {
-      setToken(localStorage.getItem("token"));
-    };
-    window.addEventListener("storage", handler);
-    return () => window.removeEventListener("storage", handler);
-  }, []);
 
   useEffect(() => {
     if (!token) return;

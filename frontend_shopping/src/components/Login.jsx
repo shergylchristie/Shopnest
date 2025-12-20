@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../apiClient";
 
 
-const Login = () => {
+const Login = ({setToken}) => {
   const [showPassword, setShowPassword] = useState(false);
   const [login, setLogin] = useState({ email: "", password: "" });
   const navigate = useNavigate();
@@ -44,6 +44,7 @@ const Login = () => {
         localStorage.setItem("token", result.token);
         localStorage.setItem("user", result.id);
         localStorage.setItem("role", result.role);
+        setToken(result.token);
         navigate("/");
       } else {
         toast.error(result.message);
