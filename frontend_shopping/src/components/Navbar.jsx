@@ -203,7 +203,7 @@ export default function Navbar({ hydrated ,setActiveCategory }) {
                 </Link>
 
                 <Link to="/cart">
-                  <Badge badgeContent={cartCount} color="error">
+                  <Badge badgeContent={cartCount}  color="error">
                     <FaShoppingCart className="text-white mx-1 mb-1" />
                   </Badge>
                 </Link>

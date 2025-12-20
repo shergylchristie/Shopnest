@@ -61,14 +61,19 @@ const EditProfileSkeleton = () => (
           </button>
           <div className="flex items-center gap-2">
             <FiUser className="text-lg sm:text-xl" />
-            <Skeleton variant="text" width={120} height={22} />
+            <Skeleton
+              variant="text"
+              width={100}
+              height={20}
+              className="!w-[100px] sm:!w-[120px]"
+            />
           </div>
         </div>
         <Skeleton
           variant="rectangular"
-          width={130}
+          width={110}
           height={32}
-          className="rounded-full hidden sm:block"
+          className="rounded-full w-[110px] sm:w-[130px]"
         />
       </div>
 
@@ -76,70 +81,60 @@ const EditProfileSkeleton = () => (
         <div className="space-y-6">
           <section className="rounded-2xl border border-slate-100 bg-slate-50/60 p-4 sm:p-5 space-y-3 sm:space-y-4">
             <div className="flex items-center gap-4">
-              <Skeleton variant="circular" width={64} height={64} />
-              <div className="space-y-1">
-                <Skeleton variant="text" width={160} height={18} />
-                <Skeleton variant="text" width={180} height={14} />
+              <Skeleton
+                variant="circular"
+                width={56}
+                height={56}
+                className="!w-[56px] !h-[56px] sm:w-16 sm:h-16"
+              />
+              <div className="space-y-1 w-[140px] sm:w-[160px]">
+                <Skeleton variant="text" width="100%" height={16} />
+                <Skeleton variant="text" width="100%" height={14} />
               </div>
             </div>
-            <Skeleton
-              variant="text"
-              width={120}
-              height={16}
-              className="sm:hidden"
-            />
+
             <div className="mt-2 space-y-4">
               <Skeleton
                 variant="rectangular"
                 height={40}
-                className="rounded-xl"
+                className="rounded-xl w-full"
               />
               <Skeleton
                 variant="rectangular"
                 height={40}
-                className="rounded-xl"
-              />
-              <Skeleton
-                variant="rectangular"
-                height={40}
-                className="rounded-xl sm:hidden"
+                className="rounded-xl w-full"
               />
             </div>
           </section>
 
           <section className="rounded-2xl border border-slate-100 bg-slate-50/60 p-4 sm:p-5 space-y-3 sm:space-y-4">
             <div className="flex items-center justify-between gap-2">
-              <div className="flex flex-col">
-                <Skeleton variant="text" width={130} height={18} />
-                <Skeleton variant="text" width={140} height={14} />
+              <div className="flex flex-col w-[120px]">
+                <Skeleton variant="text" width="100%" height={16} />
+                <Skeleton variant="text" width="100%" height={14} />
               </div>
               <Skeleton
                 variant="circular"
                 width={28}
                 height={28}
-                className="sm:hidden"
+                className="!w-7 !h-7"
               />
             </div>
             <div className="space-y-3">
               <Skeleton
                 variant="rectangular"
                 height={40}
-                className="rounded-xl"
+                className="rounded-xl w-full"
               />
               <Skeleton
                 variant="rectangular"
                 height={40}
-                className="rounded-xl"
+                className="rounded-xl w-full"
               />
               <Skeleton
                 variant="rectangular"
                 height={40}
-                className="rounded-xl"
-              />
-              <Skeleton
-                variant="rectangular"
-                height={40}
-                className="rounded-xl sm:hidden"
+                className="rounded-xl w-full"
               />
             </div>
           </section>
@@ -148,53 +143,53 @@ const EditProfileSkeleton = () => (
         <div className="space-y-6">
           <section className="rounded-2xl border border-slate-100 bg-slate-50/60 p-4 sm:p-5 space-y-3 sm:space-y-4">
             <div className="flex items-center justify-between">
-              <Skeleton variant="text" width={90} height={18} />
+              <Skeleton variant="text" width={80} height={16} />
               <Skeleton
                 variant="circular"
                 width={28}
                 height={28}
-                className="sm:hidden"
+                className="!w-7 !h-7"
               />
             </div>
             <div className="space-y-3">
               <Skeleton
                 variant="rectangular"
                 height={40}
-                className="rounded-xl"
+                className="rounded-xl w-full"
               />
               <Skeleton
                 variant="rectangular"
                 height={40}
-                className="rounded-xl"
+                className="rounded-xl w-full"
               />
               <Skeleton
                 variant="rectangular"
                 height={40}
-                className="rounded-xl"
+                className="rounded-xl w-full"
               />
               <Skeleton
                 variant="rectangular"
                 height={40}
-                className="rounded-xl"
+                className="rounded-xl w-full"
               />
             </div>
           </section>
 
           <section className="rounded-2xl border border-rose-100 bg-rose-50/70 p-4 sm:p-5 space-y-3">
             <div className="flex items-center justify-between">
-              <Skeleton variant="text" width={110} height={18} />
+              <Skeleton variant="text" width={100} height={16} />
               <Skeleton
                 variant="circular"
                 width={28}
                 height={28}
-                className="sm:hidden"
+                className="!w-7 !h-7"
               />
             </div>
             <Skeleton variant="text" width="100%" height={14} />
             <Skeleton
               variant="rectangular"
               height={40}
-              className="rounded-xl"
+              className="rounded-xl w-full"
             />
           </section>
         </div>
@@ -202,6 +197,7 @@ const EditProfileSkeleton = () => (
     </div>
   </div>
 );
+
 
 const EditProfilePage = () => {
   const id = localStorage.getItem("user");
