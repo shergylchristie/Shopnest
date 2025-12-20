@@ -6,6 +6,7 @@ const initialState = {
   cart: [],
   TotalPrice: 0,
   TotalQuantity: 0,
+  paymentCompleted: false,
   status: "idle",
 };
 
@@ -148,6 +149,12 @@ export const cartSlice = createSlice({
       state.TotalPrice = Math.round(totalPrice * 100) / 100;
       state.TotalQuantity = totalQuantity;
     },
+    paymentSuccess: (state) => {
+      state.paymentCompleted = true;
+    },
+    resetPayment: (state) => {
+      state.paymentCompleted = false;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(saveCart.fulfilled, (state, actions) =>
@@ -188,6 +195,8 @@ export const {
   cartTotal,
   clearCart,
   markCartReady,
+  paymentSuccess,
+  resetPayment
 } = cartSlice.actions;
 
 export default cartSlice.reducer;

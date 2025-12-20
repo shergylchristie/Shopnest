@@ -3,10 +3,9 @@ import toast from "react-hot-toast";
 import { FiShoppingCart, FiLock } from "react-icons/fi";
 import { useSelector, useDispatch } from "react-redux";
 import { replace, useNavigate } from "react-router-dom";
-import { cartTotal, clearCart } from "../features/cartSlice";
+import { cartTotal, clearCart, paymentSuccess } from "../features/cartSlice";
 import { apiFetch } from "../apiClient";
 import { Skeleton } from "@mui/material";
-import { useLocation } from "react-router-dom";
 
 const indianStates = [
   "Andhra Pradesh",
@@ -160,13 +159,14 @@ const CheckoutPage = () => {
   const navigate = useNavigate();
    const paymentCompletedRef = useRef(false);
   const [paying, setPaying] = useState(false);
-  
+  const paymentCompleted = useSelector(
+    (state) => state.cartItem.paymentCompleted
+  );
 
-  const location = useLocation();
-
-  if (location.state?.paymentCompleted) {
+  if (paymentCompleted) {
     return null;
   }
+
 
   if (paymentCompletedRef.current) {
   return null;
@@ -386,12 +386,12 @@ if (cartData.length === 0  ) {
               if (result.success) {
                 paymentCompletedRef.current = true;
                 toast.success(result.message);
+                dispatch(paymentSuccess());
                 dispatch(clearCart());
                 setPaying(false);
                 navigate("/order-success", {
                   replace: true,
                   state: {
-                    paymentCompleted: true,
                     paymentId: response.razorpay_payment_id,
                     orderId: response.razorpay_order_id,
                   },

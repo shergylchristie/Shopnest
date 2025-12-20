@@ -1,5 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { CheckCircle } from "lucide-react";
+import { resetPayment } from "../features/cartSlice";
+
 
 
 const OrderSuccess = () => {
@@ -10,6 +12,11 @@ const OrderSuccess = () => {
   if (!state?.paymentId || !token) {
     return navigate("/login", { replace: true });
   }
+
+  useEffect(() => {
+    dispatch(resetPayment());
+  }, []);
+
 
   return (
     <div className="min-h-96 flex items-center justify-center bg-gray-50 px-4">

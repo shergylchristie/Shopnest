@@ -16,7 +16,7 @@ const Footer = () => {
 
       {/* Bottom Note */}
       <div className="text-center text-[10px] text-gray-400 mt-2">
-        &copy; {new Date().getFullYear()} Company Name
+        &copy; {new Date().getFullYear()} Shergyl Christie
       </div>
     </footer>
   );
