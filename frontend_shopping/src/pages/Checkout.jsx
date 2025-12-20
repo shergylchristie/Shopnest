@@ -405,8 +405,14 @@ const CheckoutPage = () => {
         theme: { color: "#3399cc" },
       };
 
+      if (!window.Razorpay) {
+        toast.error("Payment gateway not loaded. Please try again.");
+        return;
+      }
+
       const paymentObject = new window.Razorpay(options);
       paymentObject.on("payment.failed", function (response) {
+        setPaying(false);
         toast.error(response.error?.description || "Payment failed");
       });
       paymentObject.open();
