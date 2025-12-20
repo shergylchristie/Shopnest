@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../apiClient";
 import { toast } from "react-hot-toast";
 import { useDispatch } from "react-redux";
+import { appLogout } from "../features/appActions";
+
 
 
 const AccountDeletePage = () => {
