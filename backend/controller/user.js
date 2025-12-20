@@ -588,18 +588,16 @@ const orderVerifyController = async (req, res) => {
 };
 
 const deleteUserAccount = async (req, res) => {
-  console.log(req.body)
-  console.log(req.params)
   try {
     const { password } = req.body;
     const { userid } = req.params;
 
-    const userExists = await userCollection.findbyId(userid);
+    const userExists = await userCollection.findById(userid);
 
     if (!userExists) {
       return res
         .status(400)
-        .json({ message: "No account found with the given email" });
+        .json({ message: "No account found" });
     }
 
     const isMatch = await bcrypt.compare(password, userExists.password);
