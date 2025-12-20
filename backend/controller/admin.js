@@ -154,15 +154,6 @@ const editProductController = async (req, res) => {
     if (category) product.category = category;
     if (stock) product.stock = stock;
 
-    deleteIndexes.sort((a, b) => b - a);
-    for (const index of deleteIndexes) {
-      if (product.images[index]) {
-        await cloudinary.api.delete_resources([product.imagesPublicIds[index]]);
-        product.images.splice(index, 1);
-        product.imagesPublicIds.splice(index, 1);
-      }
-    }
-
     replaceIndexes.forEach((index, i) => {
       if (!product.images[index] || !replaceFiles[i]) return;
 
@@ -171,6 +162,15 @@ const editProductController = async (req, res) => {
       product.images[index] = replaceFiles[i].path;
       product.imagesPublicIds[index] = replaceFiles[i].filename;
     });
+
+    deleteIndexes.sort((a, b) => b - a);
+    for (const index of deleteIndexes) {
+      if (product.images[index]) {
+        await cloudinary.api.delete_resources([product.imagesPublicIds[index]]);
+        product.images.splice(index, 1);
+        product.imagesPublicIds.splice(index, 1);
+      }
+    }
 
     newFiles.forEach((file) => {
       product.images.push(file.path);
@@ -201,6 +201,7 @@ const editProductController = async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 
 
 const sendReplyData = async (req, res) => {
