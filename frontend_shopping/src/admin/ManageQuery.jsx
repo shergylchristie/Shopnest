@@ -12,7 +12,6 @@ const ManageQuerySkeleton = () => {
         <Skeleton variant="text" width={120} height={40} />
       </h1>
 
-      {/* Desktop/Table skeleton */}
       <div className="hidden md:block overflow-x-auto rounded-lg border border-gray-200">
         <table className="min-w-full border-collapse table-fixed text-sm lg:text-base">
           <thead>
@@ -82,7 +81,8 @@ const ManageQuerySkeleton = () => {
         </table>
       </div>
 
-      {/* Mobile skeleton cards - MOBILE FIRST */}
+     
+      
       <div className="grid gap-4 md:hidden mt-4">
         {Array.from({ length: 5 }).map((_, i) => (
           <div
@@ -106,13 +106,13 @@ const ManageQuerySkeleton = () => {
                 variant="rectangular"
                 width="calc(50%-6px)"
                 height={36}
-                className="!rounded-md"
+                className="!rounded-md bg-gray-200 !border !border-gray-300"
               />
               <Skeleton
                 variant="rectangular"
                 width="calc(50%-6px)"
                 height={36}
-                className="!rounded-md"
+                className="!rounded-md bg-gray-200 !border !border-gray-300"
               />
             </div>
           </div>
