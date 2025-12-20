@@ -53,9 +53,8 @@ const EditProduct = () => {
       });
   }, [id, token]);
 
-  const totalImages =
-    imageSlots.filter((i) => !i.deleted || i.replacement).length +
-    newImages.length;
+  const totalImages = imageSlots.length + newImages.length;
+
 
   const replaceImage = (index, file) => {
     if (!file || file.size > MAX_SIZE) {
