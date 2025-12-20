@@ -366,24 +366,24 @@ const mergeGuestCartController = async (req, res) => {
 const mergeGuestWishlistController = async (req, res) => {
   try {
     const { userid, guestWishlist = [] } = req.body;
-    
 
     const wishlist = await WishlistCollection.findOne({ userid });
 
     const mergedItems = (() => {
       const set = new Set();
 
-      wishlist?.wishlistItems.forEach((item) => set.add(item.productId.toString()));
+      wishlist?.wishlistItems.forEach((item) =>
+        set.add(item.productId.toString())
+      );
 
       guestWishlist.forEach((productId) => set.add(productId.toString()));
 
       return Array.from(set).map((productId) => ({ productId }));
     })();
-     
-    
+
     await WishlistCollection.findOneAndUpdate(
       { userid },
-      { wishlistItems:  mergedItems },
+      { wishlistItems: mergedItems },
       { upsert: true, new: true }
     );
 
@@ -588,34 +588,33 @@ const orderVerifyController = async (req, res) => {
 };
 
 const deleteUserAccount = async (req, res) => {
-try {
-  const {password}= req.body;
-  const { userid } = req.params;
+  console.log(req.body)
+  console.log(req.params)
+  try {
+    const { password } = req.body;
+    const { userid } = req.params;
 
-   const userExists = await userCollection.findbyId(userid);
+    const userExists = await userCollection.findbyId(userid);
 
-   if (!userExists) {
-     return res
-       .status(400)
-       .json({ message: "No account found with the given email" });
-   }
+    if (!userExists) {
+      return res
+        .status(400)
+        .json({ message: "No account found with the given email" });
+    }
 
-   const isMatch = await bcrypt.compare(password, userExists.password);
+    const isMatch = await bcrypt.compare(password, userExists.password);
 
-   if (!isMatch) {
-     return res.status(400).json({ message: "Incorrect Password" });
-   }
+    if (!isMatch) {
+      return res.status(400).json({ message: "Incorrect Password" });
+    }
 
-    await userCollection.findByIdAndDelete(userid)
-   
-   
-   res.status(200).json({message:"Account successfully deleted"})
+    await userCollection.findByIdAndDelete(userid);
 
-  
-} catch (error) {
-  res.status(500).json({message:"Internal Server Error"})
-}
-}
+    res.status(200).json({ message: "Account successfully deleted" });
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
 
 module.exports = {
   registerUserController,

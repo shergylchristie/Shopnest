@@ -2,17 +2,17 @@ import React, { useState } from "react";
 import { FiLock } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../apiClient";
-import {toast} from "react-hot-toast"
+import { toast } from "react-hot-toast";
 
 const AccountDeletePage = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate()
-  const userid = localStorage.getItem("user")
-  const token = localStorage.getItem("token")
+  const navigate = useNavigate();
+  const userid = localStorage.getItem("user");
+  const token = localStorage.getItem("token");
 
-  if(!token){
-    navigate("/", {replace: true})
+  if (!token) {
+    navigate("/", { replace: true });
     return;
   }
 
@@ -24,27 +24,30 @@ const AccountDeletePage = () => {
     setShowPassword(!showPassword);
   };
 
- async function handleDelete(e) {
+  async function handleDelete(e) {
     e.preventDefault();
     try {
-    const res = await apiFetch(`/api/deleteAccount/${userid}`,{
-        method:"DELETE",
-        headers:{"Content-Type":"application/json",
-          Authorization: `Bearer ${token}`
+      const res = await apiFetch(`/api/deleteAccount/${userid}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        body:JSON.stringify({password})
-       })
-       const result = await res.json()
-       if(res.ok)
-       { dispatch(appLogout())
-        toast.success(result.message)}
-      else
-        toast.error(result.message)
+        body: JSON.stringify({ password }),
+      });
+      const result = await res.json();
+      if (res.ok) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        localStorage.removeItem("role");
+        dispatch(appLogout());
+        navigate("/", { replace: true });
+        toast.success(result.message);
+      } else toast.error(result.message);
     } catch (error) {
-      toast.error(error)
+      toast.error(error);
     }
-    
-  };
+  }
 
   return (
     <div className="bg-slate-50 flex items-center justify-center px-4 py-8">
