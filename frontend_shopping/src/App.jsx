@@ -35,9 +35,6 @@ const App = () => {
   const wishlistSnapshotRef = useRef(null);
   const [hydrated, setHydrated] = useState(false);
   const [token, setToken] = useState(() => localStorage.getItem("token"));
-   const paymentCompleted = useSelector(
-      (state) => state.cartItem.paymentCompleted
-    );
 
   useEffect(() => {
     if (!token) return;
@@ -110,7 +107,10 @@ const App = () => {
   return (
     <BrowserRouter>
       <ScrollToTop />
-      <Navbar hydrated={hydrated} setActiveCategory={setActiveCategory} />
+      <Navbar
+        hydrated={hydrated}
+        setActiveCategory={setActiveCategory}
+      />
       <div className="min-h-screen pt-16 bg-gray-50">
         <Routes>
           <Route
@@ -127,23 +127,14 @@ const App = () => {
           <Route path="/login" element={<Login setToken={setToken} />} />
           <Route path="/register" element={<Register />} />
           <Route path="/wishlist" element={<Wishlist />} />
-          <Route
-            path="/checkout"
-            element={
-              paymentCompleted ? (
-                <Navigate to="/order-success" replace />
-              ) : (
-                <CheckoutPage />
-              )
-            }
-          />
+          <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/editprofile" element={<EditProfilePage />} />
           <Route path="/editprofile/:addId" element={<EditProfilePage />} />
           <Route path="/category/:categoryName" element={<Categories />} />
           <Route path="/product/:id" element={<ProductDetails />} />
           <Route path="/order-success" element={<OrderSuccess />} />
-          <Route path="/accountDelete" element={<AccountDeletePage />} />
+          <Route path="/accountDelete" element={<AccountDeletePage/>}/>
 
           <Route
             path="/admin/dashboard"

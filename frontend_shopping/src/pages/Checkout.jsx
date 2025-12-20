@@ -326,6 +326,7 @@ if (cartData.length === 0  ) {
     if (paying) return;
 
     setPaying(true);
+    dispatch(paymentSuccess());
 
     if (cartData.length === 0) {
       toast.error("Your cart is empty.");
@@ -386,7 +387,6 @@ if (cartData.length === 0  ) {
               if (result.success) {
                 paymentCompletedRef.current = true;
                 toast.success(result.message);
-                dispatch(paymentSuccess());
                 dispatch(clearCart());
                 setPaying(false);
                 navigate("/order-success", {
