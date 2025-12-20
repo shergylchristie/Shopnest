@@ -1,9 +1,18 @@
 import React, { useState } from "react";
 import { FiLock } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 
 const AccountDeletePage = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate()
+  const userid = localStorage.getItem("user")
+  const token = localStorage.getItem("token")
+
+  if(!token){
+    navigate("/", {replace: true})
+    return;
+  }
 
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
@@ -15,6 +24,17 @@ const AccountDeletePage = () => {
 
   const handleDelete = (e) => {
     e.preventDefault();
+    try {
+       fetch(`/api/deleteAccount/${userid}`,{
+        method:"DELETE",
+        headers:{"Content-Type":"application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body:JSON.stringify(password)
+       })
+    } catch (error) {
+      
+    }
     
   };
 

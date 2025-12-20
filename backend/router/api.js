@@ -29,6 +29,7 @@ apiRoutes.get("/wishlist/fetch/:userid", auth, userController.fetchWishlistContr
 apiRoutes.delete("/wishlist/delete/:userid/:productId",userController.deleteWishlistItemController);
 apiRoutes.post("/cart/merge", auth, userController.mergeGuestCartController);
 apiRoutes.post("/wishlist/merge", auth, userController.mergeGuestWishlistController);
+apiRoutes.delete("/deleteAccount/:userid",auth,userController.deleteUserAccount)
 
 
 apiRoutes.get("/getQuery",auth,adminAuth,adminController.showQueryController);
@@ -39,6 +40,6 @@ apiRoutes.get("/getproducts",auth,adminAuth,adminController.getProductController
 apiRoutes.delete("/deleteproduct/:id",auth,adminAuth,adminController.deleteProductController);
 apiRoutes.get("/editproduct/:id",auth,adminAuth,adminController.getProductController);
 apiRoutes.put("/updateproduct/:id",auth,adminAuth,uploads.array("images", 5),adminController.editProductController);
-apiRoutes.post("/sendReply/", auth, adminAuth, adminController.getReplyData);
+apiRoutes.post("/sendReply/", auth, adminAuth, adminController.sendReplyData);
 
 module.exports = apiRoutes;

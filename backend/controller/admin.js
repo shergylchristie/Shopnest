@@ -1,7 +1,6 @@
 const QueryCollection = require("../models/query");
 const ProductCollection = require("../models/product");
-const path = require("path");
-const nodemailer = require("nodemailer");
+const sendMail = require("../utils/sendMail");
 const cloudinary = require("cloudinary").v2;
 cloudinary.config();
 
@@ -124,7 +123,6 @@ const deleteProductController = async (req, res) => {
   }
 };
 
-
 const editProductController = async (req, res) => {
   try {
     const { id } = req.params;
@@ -203,42 +201,36 @@ const editProductController = async (req, res) => {
   }
 };
 
-
-
-const getReplyData = async (req, res) => {
+const sendReplyData = async (req, res) => {
   try {
     const { to, sub, reply, query } = req.body;
 
-    const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: false,
-      auth: {
-        user: "shergyljchristie@gmail.com",
-        pass: "ezwx tknv gwvp crfg",
-      },
+    if (!to || !sub || !reply) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    await sendMail({
+      to,
+      subject: sub,
+      html: `
+        <div style="font-family: Arial, sans-serif; font-size: 16px">
+          <p>${reply}</p>
+          <br/>
+          <p><strong>Original query:</strong></p>
+          <blockquote>${query || ""}</blockquote>
+        </div>
+      `,
     });
 
-    const info = transporter.sendMail({
-      from: '"ChristieTech" <shergyljchristie@gmail.com>',
-      to: to,
-      subject: sub,
-      text: `${reply}\n\n---\nOriginal query:\n${query}`,
-      html: `<div style="font-family:Arial,sans-serif; font-size: 16px">
-      <p>${reply}</p>
-      <br/>
-      <p><strong>Original query:</strong></p>
-      <blockquote>${query}</blockquote>
-    </div>
-  `,
-    });
-    if (info) {
-      res.status(200).json({ message: "Replied Successfully" });
-    } else res.status(400).json({ message: "Something went wrong" });
+    return res.status(200).json({ message: "Replied Successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Send reply mail error:", error);
+    return res.status(500).json({ message: "Failed to send email" });
   }
 };
+
+module.exports = sendReplyData;
+
 
 module.exports = {
   showQueryController,
@@ -247,5 +239,5 @@ module.exports = {
   getProductController,
   deleteProductController,
   editProductController,
-  getReplyData,
+  sendReplyData,
 };

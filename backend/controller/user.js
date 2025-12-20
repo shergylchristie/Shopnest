@@ -587,6 +587,41 @@ const orderVerifyController = async (req, res) => {
   }
 };
 
+const deleteUserAccount = async (req, res) => {
+console.log(req.body)
+console.log(req.params)
+
+try {
+  const { password } = req.body;
+  const { userid } = req.params;
+
+   const userExists = await userCollection.findOne({ userid });
+
+   if (!userExists) {
+     return res
+       .status(400)
+       .json({ message: "No account found with the given email" });
+   }
+
+   const isMatch = await bcrypt.compare(password, userExists.password);
+
+   if (!isMatch) {
+     return res.status(400).json({ message: "Incorrect Password" });
+   }
+
+   const deletedItem = await userCollection.findByIdAndDelete({userid})
+   
+   if(deletedItem)
+   res.status(200).json({message:"Account successfully deleted"})
+  else
+    res.status(401).json({message:"Something went wrong"})
+
+  
+} catch (error) {
+  res.status(500).json({message:"Internal Server Error"})
+}
+}
+
 module.exports = {
   registerUserController,
   userLoginController,
@@ -610,4 +645,5 @@ module.exports = {
   saveWishlistController,
   mergeGuestCartController,
   mergeGuestWishlistController,
+  deleteUserAccount,
 };
