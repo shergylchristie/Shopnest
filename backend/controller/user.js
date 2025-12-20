@@ -107,7 +107,7 @@ const getUserController = async (req, res) => {
     const user = await userCollection.findById(id).lean();
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    const address = await Address.find({ userId: id }).lean();
+    const address = await Address.find({ userid: id }).lean();
     return res.status(200).json({ ...user, address });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error" });
@@ -126,7 +126,7 @@ const editProfileController = async (req, res) => {
     if (!updatedUser)
       return res.status(404).json({ message: "User not found" });
 
-    const address = await Address.find({ userId: id }).lean();
+    const address = await Address.find({ userid: id }).lean();
     return res.json({ ...updatedUser, address });
   } catch (error) {
     return res.status(500).json({ message: "Something went wrong" });
@@ -173,7 +173,7 @@ const changeAddressController = async (req, res) => {
     if (!user) return res.status(404).json({ message: "User not found" });
 
     if (addressId) {
-      const address = await Address.findOne({ _id: addressId, userId: id });
+      const address = await Address.findOne({ _id: addressId, userid: id });
       if (!address)
         return res.status(404).json({ message: "Address not found" });
 
@@ -188,18 +188,18 @@ const changeAddressController = async (req, res) => {
       if (isDefault === true) {
         address.default = true;
         await Address.updateMany(
-          { userId: id, _id: { $ne: addressId } },
+          { userid: id, _id: { $ne: addressId } },
           { $set: { default: false } }
         );
       }
 
       await address.save();
     } else {
-      const existingCount = await Address.countDocuments({ userId: id });
+      const existingCount = await Address.countDocuments({ userid: id });
       const shouldBeDefault = existingCount === 0 || isDefault === true;
 
       const address = new Address({
-        userId: id,
+        userid: id,
         name: name || user.name,
         phone: phone || user.phone || "",
         label: label || "",
@@ -214,14 +214,14 @@ const changeAddressController = async (req, res) => {
 
       if (shouldBeDefault) {
         await Address.updateMany(
-          { userId: id, _id: { $ne: address._id } },
+          { userid: id, _id: { $ne: address._id } },
           { $set: { default: false } }
         );
       }
     }
 
     const updatedUser = await userCollection.findById(id).lean();
-    const address = await Address.find({ userId: id }).lean();
+    const address = await Address.find({ userid: id }).lean();
     return res.json({ ...updatedUser, address });
   } catch (error) {
     return res.status(500).json({ message: "Something went wrong" });
@@ -235,9 +235,9 @@ const setDefaultAddressController = async (req, res) => {
     const user = await userCollection.findById(id);
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    await Address.updateMany({ userId: id }, { $set: { default: false } });
+    await Address.updateMany({ userid: id }, { $set: { default: false } });
     const updatedAddress = await Address.findOneAndUpdate(
-      { _id: addressId, userId: id },
+      { _id: addressId, userid: id },
       { $set: { default: true } },
       { new: true }
     );
@@ -246,7 +246,7 @@ const setDefaultAddressController = async (req, res) => {
       return res.status(404).json({ message: "Address not found" });
 
     const updatedUser = await userCollection.findById(id).lean();
-    const address = await Address.find({ userId: id }).lean();
+    const address = await Address.find({ userid: id }).lean();
     return res.json({ ...updatedUser, address });
   } catch (error) {
     return res.status(500).json({ message: "Something went wrong" });
@@ -260,16 +260,16 @@ const deleteAddressController = async (req, res) => {
     const user = await userCollection.findById(userid);
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    await Address.deleteOne({ _id: addressid, userId: userid });
+    await Address.deleteOne({ _id: addressid, userid: userid });
 
-    const addresses = await Address.find({ userId: userid }).lean();
+    const addresses = await Address.find({ userid: userid }).lean();
     if (addresses.length > 0 && !addresses.some((a) => a.default)) {
       const firstId = addresses[0]._id;
       await Address.updateOne({ _id: firstId }, { $set: { default: true } });
     }
 
     const updatedUser = await userCollection.findById(userid).lean();
-    const address = await Address.find({ userId: userid }).lean();
+    const address = await Address.find({ userid: userid }).lean();
     return res.status(200).json({ ...updatedUser, address });
   } catch (error) {
     return res.status(500).json({ message: "Something went wrong" });
