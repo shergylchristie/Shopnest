@@ -229,7 +229,7 @@ const sendReplyData = async (req, res) => {
   }
 };
 
-module.exports = sendReplyData;
+
 
 
 module.exports = {
