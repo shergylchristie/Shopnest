@@ -8,7 +8,7 @@ import {
   FiSave,
   FiChevronDown,
 } from "react-icons/fi";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams,useLocation } from "react-router-dom";
 import { apiFetch } from "../apiClient";
 import { Skeleton } from "@mui/material";
 
@@ -203,6 +203,9 @@ const EditProfilePage = () => {
   const id = localStorage.getItem("user");
   const { addId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const openFromNav = location.state?.openAddress;
+
   
   const [user, setUser] = useState({
     name: "",
@@ -230,9 +233,15 @@ const EditProfilePage = () => {
   const [updatingPassword, setUpdatingPassword] = useState(false);
 
   const [profileOpen, setProfileOpen] = useState(!addId);
-  const [addressOpen, setAddressOpen] = useState(!!addId);
+  const [addressOpen, setAddressOpen] = useState(!!addId || !!openFromNav);
   const [securityOpen, setSecurityOpen] = useState(false);
   const [dangerOpen, setDangerOpen] = useState(false);
+
+  useEffect(() => {
+    if (openFromNav) {
+      window.history.replaceState({}, document.title);
+    }
+  }, []);
 
   const [password, setPassword] = useState({
     currentPassword: "",
