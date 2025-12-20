@@ -183,7 +183,7 @@ const EditProduct = () => {
             <select
               name="category"
               value={form.category}
-              onChange={handleChange}
+              onChange={(e) => setForm({ ...form, category: e.target.value })}
               className="w-full border border-gray-300 rounded px-3 py-2"
             >
               <option value="">--SELECT--</option>
@@ -203,7 +203,9 @@ const EditProduct = () => {
             <textarea
               rows={2}
               value={form.description}
-              onChange={(e) => setForm({ ...form, category: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, description: e.target.value })
+              }
               className="w-full border p-2 rounded"
             />
           </div>
