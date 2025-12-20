@@ -19,7 +19,7 @@ const AccountDeletePage = () => {
   };
 
   return (
-    <div className="bg-slate-50 flex items-center justify-center px-4 py-12 min-h-screen">
+    <div className="bg-slate-50 flex items-center justify-center px-4 py-4 min-h-screen">
       <div className="w-full bg-white rounded-2xl shadow-md border border-slate-100 p-8 max-w-md">
         <div className="text-center mb-8">
           <div className="h-16 w-16 mx-auto mb-4 rounded-full bg-rose-100 border-4 border-rose-200 flex items-center justify-center">
