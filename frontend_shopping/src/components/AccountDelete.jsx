@@ -3,6 +3,8 @@ import { FiLock } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../apiClient";
 import { toast } from "react-hot-toast";
+import { useDispatch } from "react-redux";
+
 
 const AccountDeletePage = () => {
   const [password, setPassword] = useState("");
@@ -10,6 +12,7 @@ const AccountDeletePage = () => {
   const navigate = useNavigate();
   const userid = localStorage.getItem("user");
   const token = localStorage.getItem("token");
+  const dispatch = useDispatch()
 
   if (!token) {
     navigate("/", { replace: true });
