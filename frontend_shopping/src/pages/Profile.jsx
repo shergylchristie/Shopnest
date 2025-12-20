@@ -268,7 +268,11 @@ const ProfilePage = () => {
                 Saved addresses
               </h2>
               <button
-                onClick={() => navigate("/editprofile")}
+                onClick={() =>
+                  navigate("/editprofile/", {
+                    state: { openAddress: true },
+                  })
+                }
                 className="text-xs text-slate-600 hover:text-slate-900"
               >
                 Add new

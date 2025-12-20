@@ -8,7 +8,7 @@ import {
   FiSave,
   FiChevronDown,
 } from "react-icons/fi";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { apiFetch } from "../apiClient";
 import { Skeleton } from "@mui/material";
 
@@ -50,7 +50,6 @@ const indianStates = [
   "Lakshadweep",
   "Puducherry",
 ];
-
 
 const EditProfileSkeleton = () => (
   <div className="bg-slate-50 flex items-center justify-center px-4 py-2 md:py-5">
@@ -208,7 +207,7 @@ const EditProfilePage = () => {
   const id = localStorage.getItem("user");
   const { addId } = useParams();
   const navigate = useNavigate();
-
+  const location = useLocation();
   const [user, setUser] = useState({
     name: "",
     phone: "",
@@ -231,6 +230,8 @@ const EditProfilePage = () => {
   const [showPass, setShowPass] = useState({});
   const [username, setUsername] = useState("");
   const [loadingUser, setLoadingUser] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [updatingPassword, setUpdatingPassword] = useState(false);
 
   const [profileOpen, setProfileOpen] = useState(!addId);
   const [addressOpen, setAddressOpen] = useState(!!addId);
@@ -331,6 +332,7 @@ const EditProfilePage = () => {
 
   const handleSave = async () => {
     try {
+      setSaving(true);
       const profileRes = await apiFetch(`/api/changeuserprofile/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -381,6 +383,8 @@ const EditProfilePage = () => {
       navigate("/profile");
     } catch {
       toast.error("Something went wrong");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -407,6 +411,7 @@ const EditProfilePage = () => {
     }
 
     try {
+      setUpdatingPassword(true);
       const res = await apiFetch(`/api/changepass/${id}`, {
         method: "PUT",
         headers: {
@@ -419,20 +424,26 @@ const EditProfilePage = () => {
         }),
       });
       const result = await res.json();
-      if (res.ok) 
-       {toast.success(result.message);
+      if (res.ok) {
+        toast.success(result.message);
         setPassword({
           currentPassword: "",
           newPassword: "",
           confirmPassword: "",
         });
-       }
-
-      else toast.error(result.message);
+      } else toast.error(result.message);
     } catch {
       toast.error("Something went wrong");
+    } finally {
+      setUpdatingPassword(false);
     }
   };
+  useEffect(() => {
+    if (addId === "" && location.state?.openAddress) {
+      setAddressOpen(true);
+      setProfileOpen(false);
+    }
+  }, [addId, location.state]);
 
   return (
     <div className="bg-slate-50 flex items-center justify-center px-4 py-2 md:py-5">
@@ -454,10 +465,11 @@ const EditProfilePage = () => {
           </div>
           <button
             onClick={handleSave}
-            className="hidden sm:inline-flex items-center justify-center gap-2 text-xs sm:text-sm rounded-full border border-slate-900 bg-slate-900 px-4 py-1.5 text-white hover:bg-slate-800"
+            disabled={saving}
+            className="hidden sm:inline-flex items-center justify-center gap-2 text-xs sm:text-sm rounded-full border border-slate-900 bg-slate-900 px-4 py-1.5 text-white hover:bg-slate-800 disabled:bg-slate-400 disabled:border-slate-400 disabled:cursor-not-allowed"
           >
             <FiSave className="text-xs" />
-            Save changes
+            {saving ? "Saving..." : "Save changes"}
           </button>
         </div>
 
@@ -548,11 +560,12 @@ const EditProfilePage = () => {
 
                 <button
                   onClick={handleSave}
-                  className="mt-3 w-full sm:hidden rounded-xl border border-slate-900 bg-slate-900 px-4 py-2 text-xs font-medium text-white hover:bg-slate-800"
+                  disabled={saving}
+                  className="mt-3 w-full sm:hidden rounded-xl border border-slate-900 bg-slate-900 px-4 py-2 text-xs font-medium text-white hover:bg-slate-800 disabled:bg-slate-400 disabled:border-slate-400 disabled:cursor-not-allowed"
                 >
                   <span className="inline-flex items-center justify-center gap-2">
                     <FiSave className="text-xs" />
-                    Save profile
+                    {saving ? "Saving..." : "Save profile"}
                   </span>
                 </button>
               </div>
@@ -691,11 +704,12 @@ const EditProfilePage = () => {
 
                 <button
                   onClick={handleSave}
-                  className="mt-3 w-full sm:hidden rounded-xl border border-slate-900 bg-slate-900 px-4 py-2 text-xs font-medium text-white hover:bg-slate-800"
+                  disabled={saving}
+                  className="mt-3 w-full sm:hidden rounded-xl border border-slate-900 bg-slate-900 px-4 py-2 text-xs font-medium text-white hover:bg-slate-800 disabled:bg-slate-400 disabled:border-slate-400 disabled:cursor-not-allowed"
                 >
                   <span className="inline-flex items-center justify-center gap-2">
                     <FiSave className="text-xs" />
-                    Save address
+                    {saving ? "Saving..." : "Save address"}
                   </span>
                 </button>
               </div>
@@ -741,12 +755,14 @@ const EditProfilePage = () => {
                           value={password.currentPassword}
                           onChange={handlePasswordChange}
                           placeholder="••••••••"
-                          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 pr-12 text-sm outline-none focus:ring-2 focus:ring-slate-100"
+                          disabled={updatingPassword}
+                          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 pr-12 text-sm outline-none focus:ring-2 focus:ring-slate-100 disabled:bg-slate-50 disabled:cursor-not-allowed"
                         />
                         <button
                           type="button"
                           onClick={() => toggle("current")}
                           className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-slate-600"
+                          disabled={updatingPassword}
                         >
                           {showPass.current ? "Hide" : "Show"}
                         </button>
@@ -764,12 +780,14 @@ const EditProfilePage = () => {
                           value={password.newPassword}
                           onChange={handlePasswordChange}
                           placeholder="New password"
-                          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 pr-12 text-sm outline-none focus:ring-2 focus:ring-slate-100"
+                          disabled={updatingPassword}
+                          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 pr-12 text-sm outline-none focus:ring-2 focus:ring-slate-100 disabled:bg-slate-50 disabled:cursor-not-allowed"
                         />
                         <button
                           type="button"
                           onClick={() => toggle("new")}
                           className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-slate-600"
+                          disabled={updatingPassword}
                         >
                           {showPass.new ? "Hide" : "Show"}
                         </button>
@@ -787,12 +805,14 @@ const EditProfilePage = () => {
                           value={password.confirmPassword}
                           onChange={handlePasswordChange}
                           placeholder="Confirm password"
-                          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 pr-12 text-sm outline-none focus:ring-2 focus:ring-slate-100"
+                          disabled={updatingPassword}
+                          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 pr-12 text-sm outline-none focus:ring-2 focus:ring-slate-100 disabled:bg-slate-50 disabled:cursor-not-allowed"
                         />
                         <button
                           type="button"
                           onClick={() => toggle("confirm")}
                           className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-slate-600"
+                          disabled={updatingPassword}
                         >
                           {showPass.confirm ? "Hide" : "Show"}
                         </button>
@@ -802,9 +822,10 @@ const EditProfilePage = () => {
 
                   <button
                     type="submit"
-                    className="mt-3 w-full rounded-xl border border-slate-900 bg-slate-900 px-4 py-2 text-xs sm:text-sm font-medium text-white hover:bg-slate-800"
+                    disabled={updatingPassword}
+                    className="mt-3 w-full rounded-xl border border-slate-900 bg-slate-900 px-4 py-2 text-xs sm:text-sm font-medium text-white hover:bg-slate-800 disabled:bg-slate-400 disabled:border-slate-400 disabled:cursor-not-allowed"
                   >
-                    Update password
+                    {updatingPassword ? "Updating..." : "Update password"}
                   </button>
                 </form>
               </div>
