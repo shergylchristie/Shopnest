@@ -789,7 +789,7 @@ const CheckoutPage = () => {
 
             <button
               onClick={handlePayment}
-              className="mt-3 w-full rounded-xl bg-slate-900 px-4 py-2.5 text-xs sm:text-sm font-medium text-white shadow-sm transition hover:bg-slate-800 active:scale-[0.99]"
+              className={`${paying??disabled}mt-3 w-full rounded-xl bg-slate-900 px-4 py-2.5 text-xs sm:text-sm font-medium text-white shadow-sm transition hover:bg-slate-800 active:scale-[0.99]`}
             >
               {paying ? "Processing..." : "Continue to Payment"}
             </button>
