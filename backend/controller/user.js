@@ -605,6 +605,13 @@ const deleteUserAccount = async (req, res) => {
     if (!isMatch) {
       return res.status(400).json({ message: "Incorrect Password" });
     }
+     
+    await Promise.all([
+      QueryCollection.deleteMany({ userId: userid }),
+      CartCollection.deleteMany({ userId: userid }),
+      WishlistCollection.deleteMany({ userId: userid }),
+      Address.deleteMany({ userId: userid }),
+    ]);
 
     await userCollection.findByIdAndDelete(userid);
 
