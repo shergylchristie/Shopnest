@@ -232,7 +232,7 @@ const EditProfilePage = () => {
   const [saving, setSaving] = useState(false);
   const [updatingPassword, setUpdatingPassword] = useState(false);
 
-  const [profileOpen, setProfileOpen] = useState(!addId);
+  const [profileOpen, setProfileOpen] = useState(!addId || !openFromNav);
   const [addressOpen, setAddressOpen] = useState(!!addId || !!openFromNav);
   const [securityOpen, setSecurityOpen] = useState(false);
   const [dangerOpen, setDangerOpen] = useState(false);
