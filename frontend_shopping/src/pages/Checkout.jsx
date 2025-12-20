@@ -403,6 +403,12 @@ const CheckoutPage = () => {
           pincode: selectedAddress.pincode || "",
         },
         theme: { color: "#3399cc" },
+        modal: {
+          ondismiss: () => {
+            setPaying(false);
+            navigate("/cart");
+          },
+        },
       };
 
       if (!window.Razorpay) {
@@ -789,7 +795,12 @@ const CheckoutPage = () => {
 
             <button
               onClick={handlePayment}
-              className={`${paying??disabled}mt-3 w-full rounded-xl bg-slate-900 px-4 py-2.5 text-xs sm:text-sm font-medium text-white shadow-sm transition hover:bg-slate-800 active:scale-[0.99]`}
+              disabled={paying}
+              className={`mt-3 w-full rounded-xl px-4 py-2.5 text-xs sm:text-sm font-medium text-white shadow-sm transition ${
+                paying
+                  ? "bg-slate-400 cursor-not-allowed opacity-70"
+                  : "bg-slate-900 hover:bg-slate-800 active:scale-[0.99]"
+              }`}
             >
               {paying ? "Processing..." : "Continue to Payment"}
             </button>
