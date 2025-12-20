@@ -82,7 +82,7 @@ const CartPage = () => {
         </h1>
 
         {fetchStatus === "loading" && (
-          <div className="flex min-h-screen items-center justify-center bg-gray-50">
+          <div className="flex justify-center bg-gray-50">
             <CircularProgress />
           </div>
         )}

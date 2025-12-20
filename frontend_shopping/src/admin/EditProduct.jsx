@@ -8,22 +8,22 @@ const MAX_IMAGES = 5;
 const MAX_SIZE = 5 * 1024 * 1024;
 
 const EditProduct = () => {
-  const [product, setProduct] = useState({
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+
+  const [saving, setSaving] = useState(false);
+
+  const [form, setForm] = useState({
     title: "",
     price: "",
     description: "",
     category: "",
     stock: "",
-    images: [],
   });
 
   const [imageSlots, setImageSlots] = useState([]);
   const [newImages, setNewImages] = useState([]);
-  const [saving, setSaving] = useState(false);
-
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const token = localStorage.getItem("token");
 
   useEffect(() => {
     apiFetch(`/api/editproduct/${id}`, {
@@ -31,7 +31,14 @@ const EditProduct = () => {
     })
       .then((res) => res.json())
       .then((data) => {
-        setProduct(data);
+        setForm({
+          title: data.title,
+          price: data.price,
+          description: data.description,
+          category: data.category,
+          stock: data.stock,
+        });
+
         setImageSlots(
           data.images.map((url, index) => ({
             index,
@@ -42,7 +49,7 @@ const EditProduct = () => {
           }))
         );
       });
-  }, []);
+  }, [id, token]);
 
   const totalImages =
     imageSlots.filter((i) => !i.deleted || i.replacement).length +
@@ -68,7 +75,7 @@ const EditProduct = () => {
     );
   };
 
-  const markDelete = (index) => {
+  const deleteExisting = (index) => {
     setImageSlots((prev) =>
       prev.map((img) => (img.index === index ? { ...img, deleted: true } : img))
     );
@@ -102,11 +109,11 @@ const EditProduct = () => {
     setSaving(true);
 
     const formdata = new FormData();
-    formdata.append("title", product.title);
-    formdata.append("price", product.price);
-    formdata.append("description", product.description);
-    formdata.append("category", product.category);
-    formdata.append("stock", product.stock);
+    formdata.append("title", form.title);
+    formdata.append("price", form.price);
+    formdata.append("description", form.description);
+    formdata.append("category", form.category);
+    formdata.append("stock", form.stock);
 
     imageSlots.forEach((img) => {
       if (img.deleted && !img.replacement) {
@@ -144,73 +151,142 @@ const EditProduct = () => {
     <div className="h-[calc(100vh-4rem)] flex overflow-hidden bg-gray-50">
       <Slidebar />
       <div className="flex-1 overflow-y-auto scrollbar-hide p-6">
-        <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow">
-          <h1 className="text-2xl font-bold mb-4">Edit Product</h1>
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white p-6 rounded-md shadow space-y-4 max-w-3xl"
+        >
+          <h1 className="text-2xl font-bold">Edit Product</h1>
 
-          <select
-            name="stock"
-            value={product.stock}
-            onChange={(e) => setProduct({ ...product, stock: e.target.value })}
-            className="border p-2 mb-4 w-full"
-          >
-            <option value="">--SELECT STOCK--</option>
-            <option value="In-Stock">In Stock</option>
-            <option value="Out-Of-Stock">Out Of Stock</option>
-          </select>
+          <div>
+            <label className="text-sm font-medium">Title</label>
+            <input
+              value={form.title}
+              onChange={(e) => setForm({ ...form, title: e.target.value })}
+              className="w-full border p-2 rounded"
+            />
+          </div>
 
-          <div className="flex flex-wrap gap-3 mb-4">
-            {imageSlots.map((img) => (
-              <div
-                key={img.index}
-                className={`relative w-20 h-20 border rounded ${
-                  img.deleted ? "opacity-40" : ""
-                }`}
-              >
-                <img
-                  src={img.preview || img.url}
-                  className="w-full h-full object-contain rounded"
-                />
-                <button
-                  type="button"
-                  onClick={() => markDelete(img.index)}
-                  className="absolute top-1 right-1 bg-white text-xs px-1 rounded"
+          <div>
+            <label className="text-sm font-medium">Price</label>
+            <input
+              type="number"
+              value={form.price}
+              onChange={(e) => setForm({ ...form, price: e.target.value })}
+              className="w-full border p-2 rounded"
+            />
+          </div>
+
+          <div>
+            <label className="text-sm font-medium">Category</label>
+            <input
+              value={form.category}
+              onChange={(e) => setForm({ ...form, category: e.target.value })}
+              className="w-full border p-2 rounded"
+            />
+          </div>
+
+          <div>
+            <label className="text-sm font-medium">Description</label>
+            <textarea
+              rows={4}
+              value={form.description}
+              onChange={(e) =>
+                setForm({ ...form, description: e.target.value })
+              }
+              className="w-full border p-2 rounded"
+            />
+          </div>
+
+          <div>
+            <label className="text-sm font-medium">Stock Status</label>
+            <select
+              value={form.stock}
+              onChange={(e) => setForm({ ...form, stock: e.target.value })}
+              className="w-full border p-2 rounded"
+            >
+              <option value="">Select</option>
+              <option value="In-Stock">In Stock</option>
+              <option value="Out-Of-Stock">Out Of Stock</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="text-sm font-medium">
+              Images{" "}
+              <span className="text-xs text-gray-500">(max 5, &lt; 5MB)</span>
+            </label>
+
+            <div className="flex flex-wrap gap-3 mt-2">
+              {imageSlots.map((img) => (
+                <div
+                  key={img.index}
+                  className={`relative w-16 h-16 border rounded ${
+                    img.deleted ? "opacity-40" : ""
+                  }`}
                 >
-                  ✕
-                </button>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => replaceImage(img.index, e.target.files[0])}
-                  className="mt-1 w-full text-[10px]"
-                />
-              </div>
-            ))}
+                  <img
+                    src={img.preview || img.url}
+                    className="w-full h-full object-cover rounded"
+                  />
+                  {img.deleted ? (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setImageSlots((prev) =>
+                          prev.map((i) =>
+                            i.index === img.index ? { ...i, deleted: false } : i
+                          )
+                        )
+                      }
+                      className="absolute top-0 right-0 bg-white text-[10px] px-1 rounded"
+                    >
+                      Undo
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => deleteExisting(img.index)}
+                      className="absolute top-0 right-0 bg-white text-xs px-1 rounded"
+                    >
+                      ✕
+                    </button>
+                  )}
 
-            {newImages.map((img, i) => (
-              <div key={i} className="w-20 h-20 border rounded">
-                <img
-                  src={img.preview}
-                  className="w-full h-full object-contain rounded"
-                />
-              </div>
-            ))}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => replaceImage(img.index, e.target.files[0])}
+                    className="absolute inset-0 opacity-0"
+                  />
+                </div>
+              ))}
 
-            {totalImages < MAX_IMAGES && (
-              <label className="w-20 h-20 border-dashed border rounded flex items-center justify-center cursor-pointer">
-                +
-                <input
-                  type="file"
-                  hidden
-                  accept="image/*"
-                  onChange={(e) => addNewImage(e.target.files[0])}
-                />
-              </label>
-            )}
+              {newImages.map((img, i) => (
+                <div key={i} className="w-16 h-16 border rounded">
+                  <img
+                    src={img.preview}
+                    className="w-full h-full object-cover rounded"
+                  />
+                </div>
+              ))}
+
+              {totalImages < MAX_IMAGES && (
+                <label className="w-16 h-16 border-dashed border rounded flex items-center justify-center cursor-pointer">
+                  +
+                  <input
+                    type="file"
+                    hidden
+                    accept="image/*"
+                    onChange={(e) => addNewImage(e.target.files[0])}
+                  />
+                </label>
+              )}
+            </div>
           </div>
 
           <button
             disabled={saving}
-            className="w-full bg-purple-600 text-white py-3 rounded"
+            className="w-full bg-purple-600 text-white py-3 rounded disabled:opacity-60"
           >
             {saving ? "Saving..." : "Save Changes"}
           </button>
