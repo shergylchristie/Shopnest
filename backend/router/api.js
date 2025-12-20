@@ -39,7 +39,7 @@ apiRoutes.post("/addproduct",auth,adminAuth,uploads.array("images", 5),adminCont
 apiRoutes.get("/getproducts",auth,adminAuth,adminController.getProductController);
 apiRoutes.delete("/deleteproduct/:id",auth,adminAuth,adminController.deleteProductController);
 apiRoutes.get("/editproduct/:id",auth,adminAuth,adminController.getProductController);
-apiRoutes.put("/updateproduct/:id",auth,adminAuth,uploads.array("images", 5),adminController.editProductController);
+apiRoutes.put("/updateproduct/:id",auth,adminAuth,uploads.fields([{ name: "replaceImages", maxCount: 5 },{ name: "newImages", maxCount: 5 },]),adminController.editProductController);
 apiRoutes.post("/sendReply/", auth, adminAuth, adminController.sendReplyData);
 
 module.exports = apiRoutes;

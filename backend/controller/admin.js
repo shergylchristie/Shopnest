@@ -128,17 +128,20 @@ const editProductController = async (req, res) => {
     const { id } = req.params;
     const { title, price, description, category, stock } = req.body;
 
+    const replaceIndexes = req.body.replaceIndexes
+      ? Array.isArray(req.body.replaceIndexes)
+        ? req.body.replaceIndexes.map(Number)
+        : [Number(req.body.replaceIndexes)]
+      : [];
+
     const deleteIndexes = req.body.deleteIndexes
       ? Array.isArray(req.body.deleteIndexes)
         ? req.body.deleteIndexes.map(Number)
         : [Number(req.body.deleteIndexes)]
       : [];
 
-    const replaceIndexes = req.body.replaceIndexes
-      ? Array.isArray(req.body.replaceIndexes)
-        ? req.body.replaceIndexes.map(Number)
-        : [Number(req.body.replaceIndexes)]
-      : [];
+    const replaceFiles = req.files?.replaceImages || [];
+    const newFiles = req.files?.newImages || [];
 
     const product = await ProductCollection.findById(id);
     if (!product) {
@@ -151,43 +154,41 @@ const editProductController = async (req, res) => {
     if (category) product.category = category;
     if (stock) product.stock = stock;
 
-    let images = [...product.images];
-    let imagePublicIds = [...product.imagesPublicIds];
-
     deleteIndexes.sort((a, b) => b - a);
     for (const index of deleteIndexes) {
-      if (images[index]) {
-        await cloudinary.api.delete_resources([imagePublicIds[index]]);
-        images.splice(index, 1);
-        imagePublicIds.splice(index, 1);
+      if (product.images[index]) {
+        await cloudinary.api.delete_resources([product.imagesPublicIds[index]]);
+        product.images.splice(index, 1);
+        product.imagesPublicIds.splice(index, 1);
       }
     }
 
     replaceIndexes.forEach((index, i) => {
-      if (!images[index] || !req.files[i]) return;
+      if (!product.images[index] || !replaceFiles[i]) return;
 
-      cloudinary.api.delete_resources([imagePublicIds[index]]);
+      cloudinary.api.delete_resources([product.imagesPublicIds[index]]);
 
-      images[index] = req.files[i].path;
-      imagePublicIds[index] = req.files[i].filename;
+      product.images[index] = replaceFiles[i].path;
+      product.imagesPublicIds[index] = replaceFiles[i].filename;
     });
 
-    const newFiles = req.files.filter((_, i) => !replaceIndexes.includes(i));
     newFiles.forEach((file) => {
-      images.push(file.path);
-      imagePublicIds.push(file.filename);
+      product.images.push(file.path);
+      product.imagesPublicIds.push(file.filename);
     });
 
-    if (images.length === 0) {
+    if (product.images.length === 0) {
       return res
         .status(400)
-        .json({ message: "At least one image is required." });
+        .json({ message: "At least one image is required" });
     }
 
-    product.images = images;
-    product.imagesPublicIds = imagePublicIds;
-    product.image = images[0];
-    product.imagePublicId = imagePublicIds[0];
+    if (product.images.length > 5) {
+      return res.status(400).json({ message: "Maximum 5 images allowed" });
+    }
+
+    product.image = product.images[0];
+    product.imagePublicId = product.imagesPublicIds[0];
 
     await product.save();
 
@@ -200,6 +201,7 @@ const editProductController = async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 
 const sendReplyData = async (req, res) => {
   try {
