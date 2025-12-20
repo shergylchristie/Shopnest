@@ -151,9 +151,10 @@ const EditProduct = () => {
     <div className="h-[calc(100vh-4rem)] flex overflow-hidden bg-gray-50">
       <Slidebar />
       <div className="flex-1 overflow-y-auto scrollbar-hide p-6">
+
         <form
           onSubmit={handleSubmit}
-          className="bg-white p-6 rounded-md shadow space-y-4 max-w-3xl"
+          className="bg-white p-6 rounded-md shadow space-y-4"
         >
           <h1 className="text-2xl font-bold">Edit Product</h1>
 
@@ -177,18 +178,31 @@ const EditProduct = () => {
           </div>
 
           <div>
-            <label className="text-sm font-medium">Category</label>
-            <input
-              value={form.category}
-              onChange={(e) => setForm({ ...form, category: e.target.value })}
-              className="w-full border p-2 rounded"
-            />
+            <label className="block text-gray-700 font-semibold mb-2">
+              Category
+            </label>
+            <select
+              name="category"
+              value={product.category}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded px-3 py-2"
+            >
+              <option value="">--SELECT--</option>
+              <option value="Fashion">Fashion</option>
+              <option value="Electronics">Electronics</option>
+              <option value="Mobile">Mobile</option>
+              <option value="Footwear">Footwear</option>
+              <option value="Furniture">Furniture</option>
+              <option value="Books">Books</option>
+              <option value="Grocery">Grocery</option>
+              <option value="Camera">Camera</option>
+            </select>
           </div>
 
           <div>
             <label className="text-sm font-medium">Description</label>
             <textarea
-              rows={4}
+              rows={2}
               value={form.description}
               onChange={(e) =>
                 setForm({ ...form, description: e.target.value })
@@ -226,7 +240,7 @@ const EditProduct = () => {
                 >
                   <img
                     src={img.preview || img.url}
-                    className="w-full h-full object-cover rounded"
+                    className="w-full h-full object-contain rounded"
                   />
                   {img.deleted ? (
                     <button
@@ -265,7 +279,7 @@ const EditProduct = () => {
                 <div key={i} className="w-16 h-16 border rounded">
                   <img
                     src={img.preview}
-                    className="w-full h-full object-cover rounded"
+                    className="w-full h-full object-contain rounded"
                   />
                 </div>
               ))}
