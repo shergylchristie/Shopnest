@@ -22,6 +22,7 @@ import ProfilePage from "./pages/Profile";
 import EditProfilePage from "./pages/EditProfile";
 import AdminRoute from "./routes/AdminRoute";
 import OrderSuccess from "./components/OrderSuccess";
+import AccountDeletePage from "./components/AccountDelete";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCart, mergeGuestCart } from "./features/cartSlice";
 import { fetchwishlist, mergeGuestWishlist } from "./features/wishlistSlice";
@@ -133,6 +134,7 @@ const App = () => {
           <Route path="/category/:categoryName" element={<Categories />} />
           <Route path="/product/:id" element={<ProductDetails />} />
           <Route path="/order-success" element={<OrderSuccess />} />
+          <Route path="/accountDelete" element={<AccountDeletePage/>}/>
 
           <Route
             path="/admin/dashboard"

@@ -862,7 +862,7 @@ const EditProfilePage = () => {
                   related to your account. You can not retrieve any data, once
                   your account is deleted.
                 </p>
-                <button className="w-full rounded-xl border border-rose-300 bg-white px-4 py-2 text-xs sm:text-sm font-medium text-rose-700 hover:bg-rose-50">
+                <button onClick={()=>navigate("/accountDelete")} className="w-full rounded-xl border border-rose-300 bg-white px-4 py-2 text-xs sm:text-sm font-medium text-rose-700 hover:bg-rose-50">
                   Delete account
                 </button>
               </div>
