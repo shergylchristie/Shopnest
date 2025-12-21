@@ -186,21 +186,26 @@ const CheckoutPage = () => {
      }
    }, [isVerifying, navigate]);
 
-  useEffect(() => {
-    if (!token) {
-      navigate("/login");
-      return;
-    }
-    const init = async () => {
-      try {
-        setLoadingCheckout(true);
-        await loadUser();
-      } finally {
-        setLoadingCheckout(false);
-      }
-    };
-    init();
-  }, [navigate, token]);
+ useEffect(() => {
+   if (isVerifying) return;
+
+   if (!token) {
+     navigate("/login", { replace: true });
+     return;
+   }
+
+   const init = async () => {
+     try {
+       setLoadingCheckout(true);
+       await loadUser();
+     } finally {
+       setLoadingCheckout(false);
+     }
+   };
+
+   init();
+ }, [navigate, token, isVerifying]);
+
 
   useEffect(() => {
     if (cartData.length > 0) dispatch(cartTotal());
