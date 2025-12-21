@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { FiShoppingCart, FiLock } from "react-icons/fi";
 import { useSelector, useDispatch } from "react-redux";
-import { replace, useNavigate } from "react-router-dom";
-import { cartTotal, clearCart, paymentSuccess } from "../features/cartSlice";
+import {  useNavigate } from "react-router-dom";
+import { cartTotal, clearCart } from "../features/cartSlice";
 import { apiFetch } from "../apiClient";
 import { Skeleton } from "@mui/material";
 
@@ -163,10 +163,9 @@ const CheckoutPage = () => {
     (state) => state.cartItem.paymentCompleted
   );
 
-  if (paymentCompleted) {
+  if(sessionStorage.getItem("paymentCompleted")==="true"){
     return null;
   }
-
 
   if (paymentCompletedRef.current) {
   return null;
@@ -386,7 +385,7 @@ if (cartData.length === 0  ) {
               if (result.success) {
                 paymentCompletedRef.current = true;
                 toast.success(result.message);
-                dispatch(paymentSuccess());
+                sessionStorage.setItem("paymentCompleted","true")
                 dispatch(clearCart());
                 setPaying(false);
                 navigate("/order-success", {

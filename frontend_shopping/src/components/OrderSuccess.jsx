@@ -1,25 +1,21 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { CheckCircle } from "lucide-react";
-import { resetPayment } from "../features/cartSlice";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 
-
-
 const OrderSuccess = () => {
   const { state } = useLocation();
-  const navigate = useNavigate()
-  const token = localStorage.getItem("token")
-  const dispatch = useDispatch()
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+  const dispatch = useDispatch();
 
   if (!state?.paymentId || !token) {
     return navigate("/login", { replace: true });
   }
 
   useEffect(() => {
-    dispatch(resetPayment());
+    sessionStorage.removeItem("paymentCompleted");
   }, []);
-
 
   return (
     <div className="min-h-96 flex items-center justify-center bg-gray-50 px-4">
