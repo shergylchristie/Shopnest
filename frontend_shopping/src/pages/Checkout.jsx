@@ -161,10 +161,9 @@ const CheckoutPage = () => {
   const [paying, setPaying] = useState(false);
 
   useEffect(() => {
-    if (sessionStorage.getItem("paymentCompleted") === "true") {
-      navigate("/order-success", { replace: true });
-    }
-  }, [navigate]);
+    if (sessionStorage.getItem("paymentCompleted") === "true")   
+      return null;
+  },[]);
 
 
   if (paymentCompletedRef.current) {
