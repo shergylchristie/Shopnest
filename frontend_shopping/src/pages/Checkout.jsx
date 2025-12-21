@@ -415,21 +415,20 @@ const CheckoutPage = () => {
     }
   };
 
-   if (isVerifying) {
-     return (
+  
+
+  if (loadingCheckout) return <CheckoutSkeleton />;
+
+  return (
+    <div className="h-full bg-slate-50 flex items-center justify-center px-3 py-4">
+      {isVerifying? (
        <div className="min-h-screen flex items-center justify-center bg-white">
          <div className="flex flex-col items-center gap-4">
            <div className="w-10 h-10 border-4 border-gray-300 border-t-black rounded-full animate-spin" />
            <p className="text-sm text-gray-600">Verifying payment…</p>
          </div>
        </div>
-     );
-   }
-
-  if (loadingCheckout) return <CheckoutSkeleton />;
-
-  return (
-    <div className="h-full bg-slate-50 flex items-center justify-center px-3 py-4">
+  ):(
       <div className="w-full max-w-6xl bg-white rounded-2xl shadow-md border border-slate-100 p-4 sm:p-6 md:p-8">
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2">
@@ -816,8 +815,9 @@ const CheckoutPage = () => {
           </aside>
         </div>
       </div>
-    </div>
-  );
-};
+  )}
+  </div>
+  )
+}
 
-export default CheckoutPage;
+export default CheckoutPage
