@@ -163,6 +163,7 @@ const CheckoutPage = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [prevAddressIds, setPrevAddressIds] = useState([]);
   const [loadingCheckout, setLoadingCheckout] = useState(false);
+  const [payment, setPayment] = useState(false)
 
   const [newAddress, setNewAddress] = useState({
     name: "",
@@ -311,7 +312,8 @@ const CheckoutPage = () => {
       toast.error("No delivery address selected.");
       return;
     }
-
+    
+    setPayment(true)
     try {
       const amount = totalprice;
       const currency = "INR";
@@ -766,9 +768,23 @@ const CheckoutPage = () => {
 
             <button
               onClick={handlePayment}
-              className="mt-3 w-full rounded-xl bg-slate-900 px-4 py-2.5 text-xs sm:text-sm font-medium text-white shadow-sm transition hover:bg-slate-800 active:scale-[0.99]"
+              disabled={payment}
+              className={clsx(
+                "mt-3 w-full rounded-xl px-4 py-2.5 text-xs sm:text-sm font-medium text-white shadow-sm transition active:scale-[0.99]",
+                payment
+                  ? "bg-gray-700 cursor-not-allowed"
+                  : "bg-slate-700 hover:bg-slate-600"
+              )}
             >
-              Continue to Payment
+              {payment ? (
+                <>
+                  <span className="flex items-center justify-center gap-2">
+                    Processing...
+                  </span>
+                </>
+              ) : (
+                "Continue to Payment"
+              )}
             </button>
             <button
               onClick={() => navigate("/cart")}
