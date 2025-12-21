@@ -159,25 +159,6 @@ const CheckoutPage = () => {
   const navigate = useNavigate();
   const [paying, setPaying] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
-
-  if (isVerifying) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 border-4 border-gray-300 border-t-black rounded-full animate-spin" />
-          <p className="text-sm text-gray-600">Verifying payment…</p>
-        </div>
-      </div>
-    );
-  }
-  useEffect(() => {
-    if (isVerifying) {
-      navigate("/order-success", { replace: true });
-    }
-  }, [isVerifying, navigate]);
-
-
-
   const [user, setUser] = useState({ name: "", email: "", address: [] });
   const [selectedAddressIndex, setSelectedAddressIndex] = useState(0);
   const [showAddressDropdown, setShowAddressDropdown] = useState(false);
@@ -198,6 +179,22 @@ const CheckoutPage = () => {
   const shipping = 30;
   const tax = 10;
   const totalprice = carttInfo.TotalPrice + shipping + tax;
+
+   if (isVerifying) {
+     return (
+       <div className="min-h-screen flex items-center justify-center bg-white">
+         <div className="flex flex-col items-center gap-4">
+           <div className="w-10 h-10 border-4 border-gray-300 border-t-black rounded-full animate-spin" />
+           <p className="text-sm text-gray-600">Verifying payment…</p>
+         </div>
+       </div>
+     );
+   }
+   useEffect(() => {
+     if (isVerifying) {
+       navigate("/order-success", { replace: true });
+     }
+   }, [isVerifying, navigate]);
 
   useEffect(() => {
     if (!token) {
