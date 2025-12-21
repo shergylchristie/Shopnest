@@ -8,15 +8,15 @@ const connectDB = require("./config/db");
 
 connectDB();
 
-app.get("/api/health", (req, res) => {
-  res.status(200).send("OK");
-});
 app.use(express.static("public"));
 app.use(cors());
 app.use(express.json());
 app.use("/api", apiRoute);
 
-// Error handler middleware for multer and other errors
+app.get("/api/health", (req, res) => {
+  res.status(200).send("OK");
+});
+
 app.use((err, req, res, next) => {
   console.error("Global error handler:", err);
   if (err && err.code === "LIMIT_FILE_SIZE") {
