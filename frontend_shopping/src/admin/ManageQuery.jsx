@@ -190,7 +190,7 @@ const ManageQuery = () => {
               />
             </div>
           ) : (
-            <div>
+            <>
               <div className="hidden md:block overflow-x-auto rounded-lg border border-gray-200">
                 <table className="min-w-full border-collapse table-fixed text-sm lg:text-base">
                   <thead>
@@ -251,7 +251,44 @@ const ManageQuery = () => {
                   </tbody>
                 </table>
               </div>
-            </div>
+
+              <div className="grid gap-4 md:hidden">
+                {query.map((item, index) => (
+                  <div
+                    key={index}
+                    className="border border-gray-200 rounded-lg p-4 shadow-sm bg-white"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-semibold text-base">{item.name}</h3>
+                      <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-700">
+                        {item.status}
+                      </span>
+                    </div>
+
+                    <p className="text-xs text-gray-500 mb-1">{item.email}</p>
+
+                    <p className="text-sm text-gray-700 mt-2 break-words whitespace-normal">
+                      {item.query}
+                    </p>
+
+                    <div className="flex items-center gap-3 mt-4">
+                      <Link
+                        to={`/admin/queryReply/${item._id}`}
+                        className="flex-1 text-center text-xs font-medium text-white bg-green-600 border-2 border-green-600 rounded-md px-3 py-2 hover:scale-105 transition"
+                      >
+                        Reply
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(item._id)}
+                        className="flex-1 text-center text-xs font-medium text-white bg-red-600 border-2 border-red-600 rounded-md px-3 py-2 hover:scale-105 transition"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </div>
       )}
