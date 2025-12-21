@@ -7,11 +7,13 @@ const OrderSuccess = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
-  const dispatch = useDispatch();
 
-  if (!state?.paymentId || !token) {
-    return navigate("/login", { replace: true });
-  }
+ useEffect(() => {
+   if (!state?.paymentId || !token) {
+     navigate("/login", { replace: true });
+   }
+ }, [state, token, navigate]);
+
 
   useEffect(() => {
     sessionStorage.removeItem("paymentVerifying");

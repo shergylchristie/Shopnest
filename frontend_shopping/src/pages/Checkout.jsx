@@ -157,7 +157,6 @@ const CheckoutPage = () => {
   const userid = localStorage.getItem("user");
   const dispatch = useDispatch();
   const navigate = useNavigate();
-   const paymentCompletedRef = useRef(false);
   const [paying, setPaying] = useState(false);
 
   const isVerifying = sessionStorage.getItem("paymentVerifying") === "true";
@@ -174,21 +173,17 @@ const CheckoutPage = () => {
   }
 
 
-  useEffect(() => {
-    if (sessionStorage.getItem("paymentCompleted") === "true")   
-      return null;
-  },[]);
 
-
-  if (paymentCompletedRef.current) {
-  return null;
-}
 
 useEffect(() => {
-  if (cartData.length === 0) {
+  if (
+    cartData.length === 0 &&
+    sessionStorage.getItem("paymentCompleted") !== "true"
+  ) {
     navigate("/", { replace: true });
   }
 }, [cartData.length, navigate]);
+
 
 
   const [user, setUser] = useState({ name: "", email: "", address: [] });
@@ -400,10 +395,7 @@ useEffect(() => {
               if (result.success) {
                 sessionStorage.setItem("paymentVerifying", "true");
                 sessionStorage.setItem("paymentCompleted", "true");
-                paymentCompletedRef.current = true;
                 toast.success(result.message);
-                dispatch(clearCart());
-                setPaying(false);
                 navigate("/order-success", {
                   replace: true,
                   state: {
