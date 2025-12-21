@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { FiShoppingCart, FiLock } from "react-icons/fi";
 import { useSelector, useDispatch } from "react-redux";
@@ -158,36 +158,21 @@ const CheckoutPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [paying, setPaying] = useState(false);
-  const [paymentCompleted, setPaymentCompleted] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem("paymentCompleted");
-    if (stored === "true") {
-      setPaymentCompleted(true);
+    if (sessionStorage.getItem("paymentCompleted") === "true") {
+      navigate("/order-success", { replace: true });
     }
-  }, []);
+  }, [navigate]);
 
-  useEffect(() => {
-    if (paymentCompleted) {
-      const recentPayment = JSON.parse(
-        localStorage.getItem("recentPayment") || "{}"
-      );
-      localStorage.setItem("paymentCompleted", "true");
-      dispatch(clearCart());
-      navigate("/order-success", {
-        replace: true,
-        state: {
-          paymentId: recentPayment.paymentId || "ORDER_SUCCESS",
-          orderId: recentPayment.orderId || "ORDER_SUCCESS",
-        },
-      });
-    }
-  }, [paymentCompleted, dispatch, navigate]);
 
+
+useEffect(() => {
   if (cartData.length === 0) {
     navigate("/", { replace: true });
-    return null;
   }
+}, [cartData.length, navigate]);
+
 
   const [user, setUser] = useState({ name: "", email: "", address: [] });
   const [selectedAddressIndex, setSelectedAddressIndex] = useState(0);
@@ -396,18 +381,17 @@ const CheckoutPage = () => {
             .then((r) => r.json())
             .then((result) => {
               if (result.success) {
-                 localStorage.setItem("paymentCompleted", "true");
-                 localStorage.setItem(
-                   "recentPayment",
-                   JSON.stringify({
-                     paymentId: response.razorpay_payment_id,
-                     orderId: response.razorpay_order_id,
-                   })
-                 );
-
-                 setPaymentCompleted(true);
-                 toast.success(result.message);
-                 setPaying(false);
+                toast.success(result.message);
+                sessionStorage.setItem("paymentCompleted","true")
+                dispatch(clearCart());
+                setPaying(false);
+                navigate("/order-success", {
+                  replace: true,
+                  state: {
+                    paymentId: response.razorpay_payment_id,
+                    orderId: response.razorpay_order_id,
+                  },
+                });
               } else toast.error(result.message);
             })
             .catch(() => {
@@ -431,7 +415,7 @@ const CheckoutPage = () => {
         modal: {
           ondismiss: () => {
             setPaying(false);
-            navigate("/cart", { replace: true });
+            navigate("/cart",{replace:true});
           },
         },
       };
