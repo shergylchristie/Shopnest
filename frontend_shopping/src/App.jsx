@@ -26,6 +26,7 @@ import AccountDeletePage from "./components/AccountDelete";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCart, mergeGuestCart } from "./features/cartSlice";
 import { fetchwishlist, mergeGuestWishlist } from "./features/wishlistSlice";
+import RequireAuth from "./routes/RequireAuth"
 
 const App = () => {
   const guestCart = useSelector((state) => state.cartItem.cart);
@@ -107,10 +108,7 @@ const App = () => {
   return (
     <BrowserRouter>
       <ScrollToTop />
-      <Navbar
-        hydrated={hydrated}
-        setActiveCategory={setActiveCategory}
-      />
+      <Navbar hydrated={hydrated} setActiveCategory={setActiveCategory} />
       <div className="min-h-screen pt-16 bg-gray-50">
         <Routes>
           <Route
@@ -127,14 +125,21 @@ const App = () => {
           <Route path="/login" element={<Login setToken={setToken} />} />
           <Route path="/register" element={<Register />} />
           <Route path="/wishlist" element={<Wishlist />} />
-          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route
+            path="/checkout"
+            element={
+              <RequireAuth>
+                <CheckoutPage />
+              </RequireAuth>
+            }
+          />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/editprofile" element={<EditProfilePage />} />
           <Route path="/editprofile/:addId" element={<EditProfilePage />} />
           <Route path="/category/:categoryName" element={<Categories />} />
           <Route path="/product/:id" element={<ProductDetails />} />
           <Route path="/order-success" element={<OrderSuccess />} />
-          <Route path="/accountDelete" element={<AccountDeletePage/>}/>
+          <Route path="/accountDelete" element={<AccountDeletePage />} />
 
           <Route
             path="/admin/dashboard"

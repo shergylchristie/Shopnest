@@ -1,17 +1,9 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation} from "react-router-dom";
 import { CheckCircle } from "lucide-react";
-import { useEffect } from "react";
 
 const OrderSuccess = () => {
   const { state } = useLocation();
-  const navigate = useNavigate();
-  const token = localStorage.getItem("token");
-
-  useEffect(() => {
-    if (!state?.paymentId || !token) {
-      navigate("/login", { replace: true });
-    }
-  }, [state, token, navigate]);
+ 
 
   return (
     <div className="min-h-96 flex items-center justify-center bg-gray-50 px-4">
