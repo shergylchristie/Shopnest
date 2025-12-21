@@ -157,6 +157,7 @@ const CheckoutPage = () => {
   const userid = localStorage.getItem("user");
   const dispatch = useDispatch();
   const navigate = useNavigate();
+   const paymentCompletedRef = useRef(false);
   const [paying, setPaying] = useState(false);
 
   useEffect(() => {
@@ -166,6 +167,9 @@ const CheckoutPage = () => {
   }, [navigate]);
 
 
+  if (paymentCompletedRef.current) {
+  return null;
+}
 
 useEffect(() => {
   if (cartData.length === 0) {
@@ -381,6 +385,7 @@ useEffect(() => {
             .then((r) => r.json())
             .then((result) => {
               if (result.success) {
+                paymentCompletedRef.current = true;
                 toast.success(result.message);
                 sessionStorage.setItem("paymentCompleted","true")
                 dispatch(clearCart());
