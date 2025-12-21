@@ -10,6 +10,7 @@ const showQueryController = async (req, res) => {
   try {
     if (id) {
       const queryEmail = await QueryCollection.findById(id);
+      queryEmail.status = "Read"
       res.json(queryEmail);
     } else {
       const queryData = await QueryCollection.find();
@@ -202,8 +203,6 @@ const editProductController = async (req, res) => {
   }
 };
 
-
-
 const sendReplyData = async (req, res) => {
   try {
     const { to, sub, reply, query } = req.body;
@@ -231,9 +230,6 @@ const sendReplyData = async (req, res) => {
     return res.status(500).json({ message: "Failed to send email" });
   }
 };
-
-
-
 
 module.exports = {
   showQueryController,

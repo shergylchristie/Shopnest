@@ -125,7 +125,6 @@ const ManageQuerySkeleton = () => {
 const ManageQuery = () => {
   const [query, setQuery] = useState([]);
   const [loadingQueries, setLoadingQueries] = useState(false);
-  const replyId = useParams();
   const token = localStorage.getItem("token");
 
   async function handleDelete(id) {
@@ -229,7 +228,7 @@ const ManageQuery = () => {
                           {item.email}
                         </td>
                         <td className="px-4 lg:px-6 py-3 lg:py-4 w-[80px]">
-                          {replyId ? "Read" : "Unread"}
+                          {item.status}
                         </td>
                         <td className="px-4 lg:px-6 py-3 lg:py-4 w-[160px]">
                           <div className="flex flex-wrap gap-2">
