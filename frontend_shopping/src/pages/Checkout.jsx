@@ -773,7 +773,7 @@ const CheckoutPage = () => {
                 mt-3 w-full rounded-xl px-4 py-2.5 text-xs sm:text-sm font-medium text-white shadow-sm transition active:scale-[0.99],
                 ${payment
                   ? "bg-gray-600 cursor-not-allowed"
-                  : "bg-slate-800 hover:bg-slate-900"}
+                  : "bg-slate-700 hover:bg-slate-900"}
               `}
             >
               {payment ? (
