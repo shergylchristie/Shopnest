@@ -364,7 +364,13 @@ const CheckoutPage = () => {
                 toast.success(result.message);
                 dispatch(clearCart())
                 setIsVerifying(true);
-             
+                 sessionStorage.setItem(
+                   "lastPayment",
+                   JSON.stringify({
+                     paymentId: response.razorpay_payment_id,
+                     orderId: response.razorpay_order_id,
+                   })
+                 );
               } else toast.error(result.message);
             })
             .catch(() => {
