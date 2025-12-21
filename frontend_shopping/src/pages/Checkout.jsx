@@ -180,16 +180,6 @@ const CheckoutPage = () => {
   const tax = 10;
   const totalprice = carttInfo.TotalPrice + shipping + tax;
 
-   if (isVerifying) {
-     return (
-       <div className="min-h-screen flex items-center justify-center bg-white">
-         <div className="flex flex-col items-center gap-4">
-           <div className="w-10 h-10 border-4 border-gray-300 border-t-black rounded-full animate-spin" />
-           <p className="text-sm text-gray-600">Verifying payment…</p>
-         </div>
-       </div>
-     );
-   }
    useEffect(() => {
      if (isVerifying) {
        navigate("/order-success", { replace: true });
@@ -429,6 +419,17 @@ const CheckoutPage = () => {
       toast.error("Something went wrong while starting the payment.");
     }
   };
+
+   if (isVerifying) {
+     return (
+       <div className="min-h-screen flex items-center justify-center bg-white">
+         <div className="flex flex-col items-center gap-4">
+           <div className="w-10 h-10 border-4 border-gray-300 border-t-black rounded-full animate-spin" />
+           <p className="text-sm text-gray-600">Verifying payment…</p>
+         </div>
+       </div>
+     );
+   }
 
   if (loadingCheckout) return <CheckoutSkeleton />;
 
