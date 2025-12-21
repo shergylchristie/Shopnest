@@ -14,8 +14,10 @@ const OrderSuccess = () => {
   }
 
   useEffect(() => {
+    sessionStorage.removeItem("paymentVerifying");
     sessionStorage.removeItem("paymentCompleted");
   }, []);
+
 
   return (
     <div className="min-h-96 flex items-center justify-center bg-gray-50 px-4">

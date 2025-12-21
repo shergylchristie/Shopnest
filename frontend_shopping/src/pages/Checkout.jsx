@@ -160,6 +160,20 @@ const CheckoutPage = () => {
    const paymentCompletedRef = useRef(false);
   const [paying, setPaying] = useState(false);
 
+  const isVerifying = sessionStorage.getItem("paymentVerifying") === "true";
+
+  if (isVerifying) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-10 h-10 border-4 border-gray-300 border-t-black rounded-full animate-spin" />
+          <p className="text-sm text-gray-600">Verifying payment…</p>
+        </div>
+      </div>
+    );
+  }
+
+
   useEffect(() => {
     if (sessionStorage.getItem("paymentCompleted") === "true")   
       return null;
@@ -384,9 +398,10 @@ useEffect(() => {
             .then((r) => r.json())
             .then((result) => {
               if (result.success) {
+                sessionStorage.setItem("paymentVerifying", "true");
+                sessionStorage.setItem("paymentCompleted", "true");
                 paymentCompletedRef.current = true;
                 toast.success(result.message);
-                sessionStorage.setItem("paymentCompleted","true")
                 dispatch(clearCart());
                 setPaying(false);
                 navigate("/order-success", {
