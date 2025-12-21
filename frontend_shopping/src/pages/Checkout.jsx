@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { FiShoppingCart, FiLock } from "react-icons/fi";
 import { useSelector, useDispatch } from "react-redux";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { cartTotal, clearCart } from "../features/cartSlice";
 import { apiFetch } from "../apiClient";
 import { Skeleton } from "@mui/material";
@@ -163,7 +163,7 @@ const CheckoutPage = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [prevAddressIds, setPrevAddressIds] = useState([]);
   const [loadingCheckout, setLoadingCheckout] = useState(false);
-  const [payment, setPayment] = useState(false)
+  const [payment, setPayment] = useState(false);
 
   const [newAddress, setNewAddress] = useState({
     name: "",
@@ -312,8 +312,8 @@ const CheckoutPage = () => {
       toast.error("No delivery address selected.");
       return;
     }
-    
-    setPayment(true)
+
+    setPayment(true);
     try {
       const amount = totalprice;
       const currency = "INR";
@@ -332,6 +332,16 @@ const CheckoutPage = () => {
         description: "Order payment",
         image: "/logo.png",
         order_id: order.id,
+        modal: {
+          ondismiss: function () {
+            setPayment(false);
+            toast.error("Payment cancelled by user");
+            navigate("/cart", { replace: true });
+          },
+          escape: false, 
+          backdropclose: false, 
+          confirm_close: true,
+        },
         handler: function (response) {
           const token = localStorage.getItem("token");
           const userid = localStorage.getItem("user");
@@ -771,9 +781,11 @@ const CheckoutPage = () => {
               disabled={payment}
               className={`
                 mt-3 w-full rounded-xl px-4 py-2.5 text-xs sm:text-sm font-medium text-white shadow-sm transition active:scale-[0.99],
-                ${payment
-                  ? "bg-gray-600 cursor-not-allowed"
-                  : "bg-slate-700 hover:bg-slate-900"}
+                ${
+                  payment
+                    ? "bg-gray-600 cursor-not-allowed"
+                    : "bg-slate-700 hover:bg-slate-900"
+                }
               `}
             >
               {payment ? (
