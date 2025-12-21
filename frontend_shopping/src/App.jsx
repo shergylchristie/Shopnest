@@ -138,7 +138,14 @@ const App = () => {
           <Route path="/editprofile/:addId" element={<EditProfilePage />} />
           <Route path="/category/:categoryName" element={<Categories />} />
           <Route path="/product/:id" element={<ProductDetails />} />
-          <Route path="/order-success" element={<OrderSuccess />} />
+          <Route
+            path="/order-success"
+            element={
+              <RequireAuth>
+                <OrderSuccess />
+              </RequireAuth>
+            }
+          />
           <Route path="/accountDelete" element={<AccountDeletePage />} />
 
           <Route

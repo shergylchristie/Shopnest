@@ -3,7 +3,6 @@ import { CheckCircle } from "lucide-react";
 
 const OrderSuccess = () => {
   const { state } = useLocation();
- 
 
   return (
     <div className="min-h-96 flex items-center justify-center bg-gray-50 px-4">
