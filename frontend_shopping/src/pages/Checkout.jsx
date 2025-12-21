@@ -770,10 +770,10 @@ const CheckoutPage = () => {
               onClick={handlePayment}
               disabled={payment}
               className={`
-                "mt-3 w-full rounded-xl px-4 py-2.5 text-xs sm:text-sm font-medium text-white shadow-sm transition active:scale-[0.99]",
-                payment
+                mt-3 w-full rounded-xl px-4 py-2.5 text-xs sm:text-sm font-medium text-white shadow-sm transition active:scale-[0.99],
+                ${payment
                   ? "bg-gray-700 cursor-not-allowed"
-                  : "bg-slate-700 hover:bg-slate-600"
+                  : "bg-slate-700 hover:bg-slate-600"}
               `}
             >
               {payment ? (
