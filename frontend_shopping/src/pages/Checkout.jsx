@@ -335,7 +335,7 @@ const CheckoutPage = () => {
         modal: {
           ondismiss: function () {
             setPayment(false);
-            toast.error("Payment cancelled by user");
+            toast.error("Payment Cancelled");
             navigate("/cart", { replace: true });
           },
           escape: false, 
