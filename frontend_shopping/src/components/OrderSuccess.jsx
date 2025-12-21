@@ -2,11 +2,7 @@ import { Link, useLocation} from "react-router-dom";
 import { CheckCircle } from "lucide-react";
 
 const OrderSuccess = () => {
-const payment = JSON.parse(sessionStorage.getItem("lastPayment") || "{}");
-
-if (!payment.paymentId) {
-  return <Navigate to="/" replace />;
-}const { state } = useLocation();
+  const { state } = useLocation();
 
   return (
     <div className="min-h-96 flex items-center justify-center bg-gray-50 px-4">
@@ -19,7 +15,7 @@ if (!payment.paymentId) {
 
         {state?.paymentId && (
           <p className="text-sm text-gray-500 mb-6">
-            Payment ID: <span className="font-medium">{payment.paymentId}</span>
+            Payment ID: <span className="font-medium">{state.paymentId}</span>
           </p>
         )}
 

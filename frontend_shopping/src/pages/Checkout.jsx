@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { FiShoppingCart, FiLock } from "react-icons/fi";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 import { cartTotal, clearCart } from "../features/cartSlice";
 import { apiFetch } from "../apiClient";
 import { Skeleton } from "@mui/material";
@@ -157,14 +157,12 @@ const CheckoutPage = () => {
   const userid = localStorage.getItem("user");
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [paying, setPaying] = useState(false);
-  const [isVerifying, setIsVerifying] = useState(false);
   const [user, setUser] = useState({ name: "", email: "", address: [] });
   const [selectedAddressIndex, setSelectedAddressIndex] = useState(0);
   const [showAddressDropdown, setShowAddressDropdown] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [prevAddressIds, setPrevAddressIds] = useState([]);
-  const [loadingCheckout, setLoadingCheckout] = useState(true);
+  const [loadingCheckout, setLoadingCheckout] = useState(false);
 
   const [newAddress, setNewAddress] = useState({
     name: "",
@@ -180,12 +178,21 @@ const CheckoutPage = () => {
   const tax = 10;
   const totalprice = carttInfo.TotalPrice + shipping + tax;
 
-   useEffect(() => {
-     if (isVerifying) {
-       navigate("/order-success", { replace: true });
-     }
-   }, [isVerifying, navigate]);
-
+  useEffect(() => {
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+    const init = async () => {
+      try {
+        setLoadingCheckout(true);
+        await loadUser();
+      } finally {
+        setLoadingCheckout(false);
+      }
+    };
+    init();
+  }, [navigate, token]);
 
   useEffect(() => {
     if (cartData.length > 0) dispatch(cartTotal());
@@ -205,12 +212,8 @@ const CheckoutPage = () => {
       setSelectedAddressIndex(index);
     } catch {
       toast.error("Unable to load user details.");
-    } finally {
-      setLoadingCheckout(false);
     }
   }
-
-  useEffect(()=>loadUser(),[])
 
   const selectedAddress =
     user.address && user.address.length > 0
@@ -300,10 +303,6 @@ const CheckoutPage = () => {
   };
 
   const handlePayment = async () => {
-    if (paying) return;
-
-    setPaying(true);
-
     if (cartData.length === 0) {
       toast.error("Your cart is empty.");
       return;
@@ -362,21 +361,17 @@ const CheckoutPage = () => {
             .then((result) => {
               if (result.success) {
                 toast.success(result.message);
-                dispatch(clearCart())
-                setIsVerifying(true);
-                 sessionStorage.setItem(
-                   "lastPayment",
-                   JSON.stringify({
-                     paymentId: response.razorpay_payment_id,
-                     orderId: response.razorpay_order_id,
-                   })
-                 );
+                dispatch(clearCart());
+                navigate("/order-success", {
+                  replace: true,
+                  state: {
+                    paymentId: response.razorpay_payment_id,
+                    orderId: response.razorpay_order_id,
+                  },
+                });
               } else toast.error(result.message);
             })
-            .catch(() => {
-              setPaying(false);
-              toast.error("Payment verification failed.");
-            });
+            .catch(() => toast.error("Payment verification failed."));
         },
         prefill: {
           name: selectedAddress.name || user.name || "",
@@ -391,22 +386,10 @@ const CheckoutPage = () => {
           pincode: selectedAddress.pincode || "",
         },
         theme: { color: "#3399cc" },
-        modal: {
-          ondismiss: () => {
-            setPaying(false);
-            navigate("/cart", { replace: true });
-          },
-        },
       };
-
-      if (!window.Razorpay) {
-        toast.error("Payment gateway not loaded. Please try again.");
-        return;
-      }
 
       const paymentObject = new window.Razorpay(options);
       paymentObject.on("payment.failed", function (response) {
-        setPaying(false);
         toast.error(response.error?.description || "Payment failed");
       });
       paymentObject.open();
@@ -415,20 +398,10 @@ const CheckoutPage = () => {
     }
   };
 
-  
-
   if (loadingCheckout) return <CheckoutSkeleton />;
 
   return (
     <div className="h-full bg-slate-50 flex items-center justify-center px-3 py-4">
-      {isVerifying? (
-       <div className="min-h-screen flex items-center justify-center bg-white">
-         <div className="flex flex-col items-center gap-4">
-           <div className="w-10 h-10 border-4 border-gray-300 border-t-black rounded-full animate-spin" />
-           <p className="text-sm text-gray-600">Verifying payment…</p>
-         </div>
-       </div>
-  ):(
       <div className="w-full max-w-6xl bg-white rounded-2xl shadow-md border border-slate-100 p-4 sm:p-6 md:p-8">
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2">
@@ -793,14 +766,9 @@ const CheckoutPage = () => {
 
             <button
               onClick={handlePayment}
-              disabled={paying}
-              className={`mt-3 w-full rounded-xl px-4 py-2.5 text-xs sm:text-sm font-medium text-white shadow-sm transition ${
-                paying
-                  ? "bg-slate-400 cursor-not-allowed opacity-70"
-                  : "bg-slate-900 hover:bg-slate-800 active:scale-[0.99]"
-              }`}
+              className="mt-3 w-full rounded-xl bg-slate-900 px-4 py-2.5 text-xs sm:text-sm font-medium text-white shadow-sm transition hover:bg-slate-800 active:scale-[0.99]"
             >
-              {paying ? "Processing..." : "Continue to Payment"}
+              Continue to Payment
             </button>
             <button
               onClick={() => navigate("/cart")}
@@ -815,9 +783,8 @@ const CheckoutPage = () => {
           </aside>
         </div>
       </div>
-  )}
-  </div>
-  )
-}
+    </div>
+  );
+};
 
-export default CheckoutPage
+export default CheckoutPage;
