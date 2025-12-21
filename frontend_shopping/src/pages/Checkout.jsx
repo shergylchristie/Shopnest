@@ -164,7 +164,7 @@ const CheckoutPage = () => {
   const [showAddressDropdown, setShowAddressDropdown] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [prevAddressIds, setPrevAddressIds] = useState([]);
-  const [loadingCheckout, setLoadingCheckout] = useState(false);
+  const [loadingCheckout, setLoadingCheckout] = useState(true);
 
   const [newAddress, setNewAddress] = useState({
     name: "",
@@ -205,6 +205,8 @@ const CheckoutPage = () => {
       setSelectedAddressIndex(index);
     } catch {
       toast.error("Unable to load user details.");
+    } finally {
+      setLoadingCheckout(false);
     }
   }
 

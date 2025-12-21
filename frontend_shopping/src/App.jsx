@@ -26,7 +26,7 @@ import AccountDeletePage from "./components/AccountDelete";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCart, mergeGuestCart } from "./features/cartSlice";
 import { fetchwishlist, mergeGuestWishlist } from "./features/wishlistSlice";
-import RequireAuth from "./routes/RequireAuth"
+import RequireAuth from "./routes/RequireAuth";
 
 const App = () => {
   const guestCart = useSelector((state) => state.cartItem.cart);
@@ -49,11 +49,11 @@ const App = () => {
     }
   }, [token]);
 
-   useEffect(() => {
-     if (token) {
-       setHydrated(false);
-     }
-   }, [token]);
+  useEffect(() => {
+    if (token) {
+      setHydrated(false);
+    }
+  }, [token]);
 
   useEffect(() => {
     if (!token) return;
@@ -63,7 +63,6 @@ const App = () => {
 
     const cartSnapshot = cartSnapshotRef.current;
     const wishlistSnapshot = wishlistSnapshotRef.current;
-
 
     const hydrate = async () => {
       try {
@@ -90,7 +89,6 @@ const App = () => {
 
         await dispatch(fetchCart(userid)).unwrap();
         await dispatch(fetchwishlist(userid)).unwrap();
-        
 
         cartSnapshotRef.current = null;
         wishlistSnapshotRef.current = null;
