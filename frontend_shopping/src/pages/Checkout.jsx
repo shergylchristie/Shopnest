@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { FiShoppingCart, FiLock } from "react-icons/fi";
 import { useSelector, useDispatch } from "react-redux";
@@ -207,6 +207,8 @@ const CheckoutPage = () => {
       toast.error("Unable to load user details.");
     }
   }
+
+  useEffect(()=>loadUser(),[])
 
   const selectedAddress =
     user.address && user.address.length > 0
