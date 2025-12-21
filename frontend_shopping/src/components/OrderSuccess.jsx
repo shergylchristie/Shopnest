@@ -14,7 +14,7 @@ const OrderSuccess = () => {
   }
 
   useEffect(() => {
-    sessionStorage.removeItem("paymentCompleted");
+    localStorage.removeItem("recentPayment");
   }, []);
 
   return (
