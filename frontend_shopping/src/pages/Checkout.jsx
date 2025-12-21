@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { FiShoppingCart, FiLock } from "react-icons/fi";
 import { useSelector, useDispatch } from "react-redux";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { cartTotal, clearCart } from "../features/cartSlice";
 import { apiFetch } from "../apiClient";
 import { Skeleton } from "@mui/material";
@@ -158,8 +158,7 @@ const CheckoutPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [paying, setPaying] = useState(false);
-
-  const isVerifying = sessionStorage.getItem("paymentVerifying") === "true";
+  const [isVerifying, setIsVerifying] = useState(false);
 
   if (isVerifying) {
     return (
@@ -171,18 +170,11 @@ const CheckoutPage = () => {
       </div>
     );
   }
-
-
-
-
-useEffect(() => {
-  if (
-    cartData.length === 0 &&
-    sessionStorage.getItem("paymentCompleted") !== "true"
-  ) {
-    navigate("/", { replace: true });
-  }
-}, [cartData.length, navigate]);
+  useEffect(() => {
+    if (isVerifying) {
+      navigate("/order-success", { replace: true });
+    }
+  }, [isVerifying, navigate]);
 
 
 
@@ -393,16 +385,10 @@ useEffect(() => {
             .then((r) => r.json())
             .then((result) => {
               if (result.success) {
-                sessionStorage.setItem("paymentVerifying", "true");
-                sessionStorage.setItem("paymentCompleted", "true");
                 toast.success(result.message);
-                navigate("/order-success", {
-                  replace: true,
-                  state: {
-                    paymentId: response.razorpay_payment_id,
-                    orderId: response.razorpay_order_id,
-                  },
-                });
+                dispatch(clearCart())
+                setIsVerifying(true);
+             
               } else toast.error(result.message);
             })
             .catch(() => {
@@ -426,7 +412,7 @@ useEffect(() => {
         modal: {
           ondismiss: () => {
             setPaying(false);
-            navigate("/cart",{replace:true});
+            navigate("/cart", { replace: true });
           },
         },
       };
